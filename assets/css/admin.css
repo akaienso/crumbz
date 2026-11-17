@@ -1,0 +1,39 @@
+/* Crumbz admin styles. GPL-2.0-or-later. */
+
+.crumbz-admin .crumbz-lead {
+    font-size: 1.05rem;
+    max-width: 60em;
+}
+
+.crumbz-admin .crumbz-note {
+    max-width: 60em;
+    padding: 10px 14px;
+    border-left: 4px solid #2271b1;
+    background: #f0f6fc;
+}
+
+.crumbz-admin .crumbz-docs input.regular-text,
+.crumbz-admin .crumbz-docs select {
+    max-width: 100%;
+}
+
+.crumbz-admin .crumbz-progress {
+    color: #50575e;
+    margin-bottom: 0;
+}
+
+.crumbz-admin .crumbz-actions {
+    margin-top: 16px;
+}
+
+.crumbz-admin .crumbz-actions form {
+    display: inline;
+}
+
+.crumbz-admin .crumbz-summary th {
+    width: 45%;
+}
+
+.crumbz-admin .crumbz-list li {
+    margin: 6px 0;
+}

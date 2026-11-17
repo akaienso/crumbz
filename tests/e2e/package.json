@@ -1,0 +1,15 @@
+{
+  "name": "crumbz-e2e",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Local browser and admin tests for Crumbz. Runs only against a throwaway WordPress site.",
+  "type": "module",
+  "scripts": {
+    "test": "node test.mjs",
+    "test:admin": "node admin.mjs"
+  },
+  "license": "GPL-2.0-or-later",
+  "dependencies": {
+    "puppeteer-core": "^23.0.0"
+  }
+}

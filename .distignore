@@ -1,0 +1,15 @@
+# Files left out of crumbz.zip (the WordPress install package). Paths are relative to the repo root.
+.git
+.github
+.gitignore
+.distignore
+.release-please-manifest.json
+release-please-config.json
+docs
+dist
+tests
+node_modules
+vendor
+*.zip
+CONTRIBUTING.md
+README.md
