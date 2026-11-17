@@ -12,6 +12,17 @@ class Crumbz_Frontend {
     public static function init(): void {
         add_action('wp_enqueue_scripts', [__CLASS__, 'enqueue']);
         add_action('wp_head', [__CLASS__, 'head_snippets'], 1);
+        add_action('send_headers', [__CLASS__, 'vary_headers']);
+    }
+
+    /**
+     * The config object carries the Global Privacy Control header, so cached copies of the page
+     * must be keyed on it.
+     */
+    public static function vary_headers(): void {
+        if (!is_admin() && !headers_sent()) {
+            header('Vary: Sec-GPC', false);
+        }
     }
 
     public static function enqueue(): void {
@@ -67,8 +78,8 @@ class Crumbz_Frontend {
     }
 
     /**
-     * Admin-supplied head snippets. Each category's snippet prints live only when
-     * that category is allowed; otherwise its script tags are rendered inert.
+     * Admin-supplied head snippets. Each snippet is wrapped in an inert <template>, so nothing in it
+     * runs or loads (scripts or images) until frontend.js moves it into the page after consent.
      */
     public static function head_snippets(): void {
         if (!Crumbz_Settings::get('enabled')) {
@@ -83,7 +94,7 @@ class Crumbz_Frontend {
             echo "\n<!-- Crumbz snippet: " . esc_html($cat) . " -->\n";
             // Admin-entered HTML for users with unfiltered_html; output is intentionally not escaped.
             // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-            echo Crumbz_Consent::allowed($cat) ? $html : Crumbz_Scripts::block_html($html, $cat);
+            echo '<template data-crumbz-category="' . esc_attr($cat) . '">' . $html . '</template>';
             echo "\n";
         }
     }

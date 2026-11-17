@@ -30,9 +30,11 @@ class Crumbz_Scripts {
             return $tag;
         }
         $cat = self::category_for_src((string) $src);
-        if ($cat === null || Crumbz_Consent::allowed($cat)) {
+        if ($cat === null) {
             return $tag;
         }
+        // Always inert on the server. frontend.js enables the script after the visitor's choice,
+        // so the page HTML never depends on a cookie and can be cached safely.
         return self::block_html((string) $tag, $cat);
     }
 

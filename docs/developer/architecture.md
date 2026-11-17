@@ -25,10 +25,10 @@ Crumbz is a WordPress plugin with a PHP back end and a small vanilla JavaScript 
 ## Request flow
 
 1. On every front-end page, `Crumbz_Frontend::enqueue()` loads `frontend.js` and passes a config object through `wp_add_inline_script()`. The config holds the banner text, the documents, the jurisdictions, the revision, and whether the Global Privacy Control header was sent.
-2. Before `wp_head` and during the script enqueue, `Crumbz_Scripts::filter_tag()` checks each enqueued script's URL against the rules. Any script whose category is not allowed is printed as `type="text/plain" data-crumbz-category="..."`.
+2. `Crumbz_Scripts::filter_tag()` checks each enqueued script's URL against the rules. A matching script is always printed as `type="text/plain" data-crumbz-category="..."`, whatever the visitor chose. Head snippets are always printed inside an inert `<template data-crumbz-category="...">`.
 3. `frontend.js` runs on the page. With no valid consent record, it shows the banner. With a valid record, it shows the icon and restores the icon position, if Preferences is allowed.
-4. When the visitor chooses, `frontend.js` writes the `crumbz_consent` cookie, re-creates any scripts that are now allowed, and hides the banner.
-5. On the next page load, the server reads the same cookie. Allowed scripts are printed live. The client-side unblock is a fallback for pages served from a cache.
+4. When the visitor chooses, `frontend.js` writes the `crumbz_consent` cookie. It re-creates each allowed script, and moves each allowed snippet out of its template into the page.
+5. Because the server output never depends on the cookie, a cached copy of a page is correct for every visitor. The only request header the output depends on is `Sec-GPC`, and `Vary: Sec-GPC` is sent for that reason.
 
 ## Settings storage
 

@@ -125,6 +125,24 @@
             s.text = old.textContent;
             old.parentNode.replaceChild(s, old);
         });
+        unblockTemplates();
+    }
+
+    /** Moves allowed head snippets out of their inert <template> wrappers into the page. */
+    function unblockTemplates() {
+        var tpls = document.querySelectorAll('template[data-crumbz-category]');
+        Array.prototype.forEach.call(tpls, function (tpl) {
+            if (!allowed(tpl.getAttribute('data-crumbz-category'))) { return; }
+            var frag = tpl.content.cloneNode(true);
+            Array.prototype.forEach.call(frag.querySelectorAll('script'), function (old) {
+                var s = document.createElement('script');
+                Array.prototype.forEach.call(old.attributes, function (a) { s.setAttribute(a.name, a.value); });
+                s.text = old.textContent;
+                old.parentNode.replaceChild(s, old);
+            });
+            (document.head || document.documentElement).appendChild(frag);
+            tpl.parentNode.removeChild(tpl);
+        });
     }
 
     function allDocs() {
