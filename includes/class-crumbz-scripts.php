@@ -39,6 +39,26 @@ class Crumbz_Scripts {
     }
 
     /** Rewrites every <script> opening tag in $html so it stays inert until allowed. */
+    /**
+     * A marker generated once per page render. Blocked tags carry it, and the same value goes into the
+     * page config. frontend.js revives only tags with this marker, so tags injected from elsewhere stay inert.
+     * It is a marker, not a secret: anyone who can read the page source can read it.
+     */
+    public static function nonce(): string {
+        static $value = null;
+        if ($value === null) {
+            $value = wp_generate_password(16, false, false);
+        }
+        return $value;
+    }
+
+    /** Stamps the nonce on every script tag inside a snippet, so only the plugin's own scripts are revived. */
+    public static function mark_nonce(string $html): string {
+        return (string) preg_replace_callback('/<script\b/i', static function () {
+            return '<script data-crumbz-nonce="' . esc_attr(self::nonce()) . '"';
+        }, $html);
+    }
+
     public static function block_html(string $html, string $cat): string {
         // The original type (for example type="module") is kept in data-crumbz-type, so frontend.js can restore it.
         return (string) preg_replace_callback('/<script\b[^>]*>/i', static function ($m) use ($cat) {
@@ -48,7 +68,7 @@ class Crumbz_Scripts {
                 $orig = $t[2];
                 $tag  = (string) preg_replace('/\stype\s*=\s*(["\']?)[^"\'\s>]*\1/i', '', $tag, 1);
             }
-            $extra = 'type="text/plain" data-crumbz-category="' . esc_attr($cat) . '"';
+            $extra = 'type="text/plain" data-crumbz-category="' . esc_attr($cat) . '" data-crumbz-nonce="' . esc_attr(self::nonce()) . '"';
             if ($orig !== '') {
                 $extra .= ' data-crumbz-type="' . esc_attr($orig) . '"';
             }
