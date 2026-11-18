@@ -52,6 +52,13 @@ class Crumbz_Scripts {
         return $value;
     }
 
+    /** Stamps the nonce on every script tag inside a snippet, so only the plugin's own scripts are revived. */
+    public static function mark_nonce(string $html): string {
+        return (string) preg_replace_callback('/<script\b/i', static function () {
+            return '<script data-crumbz-nonce="' . esc_attr(self::nonce()) . '"';
+        }, $html);
+    }
+
     public static function block_html(string $html, string $cat): string {
         // The original type (for example type="module") is kept in data-crumbz-type, so frontend.js can restore it.
         return (string) preg_replace_callback('/<script\b[^>]*>/i', static function ($m) use ($cat) {

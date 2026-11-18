@@ -151,6 +151,8 @@
             if (!ours(tpl) || !allowed(tpl.getAttribute('data-crumbz-category'))) { return; }
             var frag = tpl.content.cloneNode(true);
             Array.prototype.forEach.call(frag.querySelectorAll('script'), function (old) {
+                // A script without the plugin's marker was added to the template by something else: drop it.
+                if (!ours(old)) { old.parentNode.removeChild(old); return; }
                 old.parentNode.replaceChild(recreateScript(old), old);
             });
             (document.head || document.documentElement).appendChild(frag);
