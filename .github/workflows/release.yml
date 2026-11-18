@@ -66,8 +66,15 @@ jobs:
           rsync -a --exclude-from=.distignore ./ dist/crumbz/
           (cd dist && zip -qr ../crumbz.zip crumbz)
           unzip -l crumbz.zip | tail -1
-      - name: Attach the zip to the GitHub release
+      # The release is a draft until the zip is attached. Immutable releases reject uploads after publishing.
+      - name: Attach the zip to the draft release
         env:
           GH_TOKEN: ${{ secrets.RELEASE_PLEASE_TOKEN || secrets.GITHUB_TOKEN }}
           TAG: ${{ needs.release-please.outputs.tag_name }}
-        run: gh release upload "$TAG" crumbz.zip --clobber
+        run: gh release upload "$TAG" crumbz.zip --clobber -R "$GITHUB_REPOSITORY"
+
+      - name: Publish the release
+        env:
+          GH_TOKEN: ${{ secrets.RELEASE_PLEASE_TOKEN || secrets.GITHUB_TOKEN }}
+          TAG: ${{ needs.release-please.outputs.tag_name }}
+        run: gh release edit "$TAG" --draft=false -R "$GITHUB_REPOSITORY"
