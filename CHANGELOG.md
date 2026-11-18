@@ -2,6 +2,13 @@
 
 All notable changes to Crumbz are recorded here. Release notes are generated from merged pull requests by release-please.
 
+## [0.1.1](https://github.com/akaienso/crumbz/compare/v0.1.0...v0.1.1) (2026-11-18)
+
+
+### Bug Fixes
+
+* keep page output independent of the consent cookie ([#1](https://github.com/akaienso/crumbz/issues/1)) ([7105403](https://github.com/akaienso/crumbz/commit/7105403a2d03348ebff6efb8a374a96c4256cc7c))
+
 ## 0.1.0 (2026-11-17)
 
 Initial release.
