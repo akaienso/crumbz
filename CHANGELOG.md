@@ -2,6 +2,13 @@
 
 All notable changes to Crumbz are recorded here. Release notes are generated from merged pull requests by release-please.
 
+## [0.1.2](https://github.com/akaienso/crumbz/compare/v0.1.1...v0.1.2) (2026-11-18)
+
+
+### Bug Fixes
+
+* revive only plugin-printed blocked tags ([#4](https://github.com/akaienso/crumbz/issues/4)) ([3ab6922](https://github.com/akaienso/crumbz/commit/3ab692278b358753936ae01ca18375ea2b7b31e9))
+
 ## [0.1.1](https://github.com/akaienso/crumbz/compare/v0.1.0...v0.1.1) (2026-11-18)
 
 
