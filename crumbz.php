@@ -9,13 +9,13 @@
  * Text Domain:       crumbz
  */
 
-/* Version: 0.1.11 */ // x-release-please-version
+/* Version: 0.1.12 */ // x-release-please-version
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
-define('CRUMBZ_VERSION', '0.1.11'); // x-release-please-version
+define('CRUMBZ_VERSION', '0.1.12'); // x-release-please-version
 define('CRUMBZ_DIR', plugin_dir_path(__FILE__));
 define('CRUMBZ_URL', plugin_dir_url(__FILE__));
 define('CRUMBZ_BASENAME', plugin_basename(__FILE__));
