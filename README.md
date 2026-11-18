@@ -2,7 +2,7 @@
 
 **Free, open-source cookie consent for any WordPress site.** Crumbz is consent-first: nothing optional runs, and no optional cookie is set, until a visitor clicks Accept. It works with any theme or page builder and does not need another plugin.
 
-Status: **0.1.0**. Tested on WordPress 7.1 with Google Chrome. See the [release notes](CHANGELOG.md).
+Status: released. Tested on WordPress 7.1 with Google Chrome. See the [latest release](https://github.com/akaienso/crumbz/releases/latest) and the [changelog](CHANGELOG.md).
 
 ## Features
 
