@@ -309,6 +309,28 @@ async function main() {
             await ctx.close();
         }
 
+        // ---- N1: a blocked tag injected without the plugin's marker is not revived ----
+        {
+            const { ctx, page } = await freshPage(browser);
+            await page.goto(BASE, { waitUntil: 'networkidle0' });
+            await clickButton(page, '.crumbz-banner', 'Accept all');
+            await page.evaluate(() => {
+                const s = document.createElement('script');
+                s.type = 'text/plain';
+                s.setAttribute('data-crumbz-category', 'marketing');
+                s.id = 'test-injected';
+                s.textContent = 'window.__injected = true;';
+                document.body.appendChild(s);
+            });
+            await new Promise(r => setTimeout(r, 300));
+            const st = await page.evaluate(() => {
+                const n = document.getElementById('test-injected');
+                return { type: n ? n.getAttribute('type') : 'missing', ran: !!window.__injected };
+            });
+            check('N1 a blocked tag injected without the plugin marker stays inert', st.type === 'text/plain' && !st.ran, JSON.stringify(st));
+            await ctx.close();
+        }
+
         // ---- F: Theme toggle cycles and applies ----
         {
             const { ctx, page } = await freshPage(browser);

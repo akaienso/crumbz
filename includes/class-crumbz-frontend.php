@@ -74,6 +74,7 @@ class Crumbz_Frontend {
             'gpc'            => Crumbz_Consent::gpc(),
             'documents'      => $docs,
             'text'           => (array) $s['text'],
+            'nonce'          => Crumbz_Scripts::nonce(),
         ];
     }
 
@@ -94,7 +95,7 @@ class Crumbz_Frontend {
             echo "\n<!-- Crumbz snippet: " . esc_html($cat) . " -->\n";
             // Admin-entered HTML for users with unfiltered_html; output is intentionally not escaped.
             // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-            echo '<template data-crumbz-category="' . esc_attr($cat) . '">' . $html . '</template>';
+            echo '<template data-crumbz-category="' . esc_attr($cat) . '" data-crumbz-nonce="' . esc_attr(Crumbz_Scripts::nonce()) . '">' . $html . '</template>';
             echo "\n";
         }
     }

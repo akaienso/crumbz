@@ -8,6 +8,11 @@
 
     var cfg = window.crumbzConfig || {};
     var T = cfg.text || {};
+    // Only tags the plugin printed carry this per-page marker. Tags injected from elsewhere are left alone.
+    var NONCE = cfg.nonce || '';
+    function ours(node) {
+        return !!NONCE && node.getAttribute('data-crumbz-nonce') === NONCE;
+    }
     var CATS = ['preferences', 'statistics', 'marketing'];
     var THEMES = ['auto', 'light', 'dark'];
     var POS_COOKIE = 'crumbz_icon';
@@ -115,7 +120,7 @@
         var nodes = document.querySelectorAll('script[type="text/plain"][data-crumbz-category]');
         Array.prototype.forEach.call(nodes, function (old) {
             var cat = old.getAttribute('data-crumbz-category');
-            if (!allowed(cat)) { return; }
+            if (!ours(old) || !allowed(cat)) { return; }
             old.parentNode.replaceChild(recreateScript(old), old);
         });
         unblockTemplates();
@@ -128,7 +133,7 @@
     function recreateScript(old) {
         var s = document.createElement('script');
         Array.prototype.forEach.call(old.attributes, function (a) {
-            if (a.name !== 'type' && a.name !== 'data-crumbz-category' && a.name !== 'data-crumbz-type') {
+            if (a.name !== 'type' && a.name !== 'data-crumbz-category' && a.name !== 'data-crumbz-type' && a.name !== 'data-crumbz-nonce') {
                 s.setAttribute(a.name, a.value);
             }
         });
@@ -143,7 +148,7 @@
     function unblockTemplates() {
         var tpls = document.querySelectorAll('template[data-crumbz-category]');
         Array.prototype.forEach.call(tpls, function (tpl) {
-            if (!allowed(tpl.getAttribute('data-crumbz-category'))) { return; }
+            if (!ours(tpl) || !allowed(tpl.getAttribute('data-crumbz-category'))) { return; }
             var frag = tpl.content.cloneNode(true);
             Array.prototype.forEach.call(frag.querySelectorAll('script'), function (old) {
                 old.parentNode.replaceChild(recreateScript(old), old);
