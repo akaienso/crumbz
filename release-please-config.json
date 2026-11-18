@@ -5,7 +5,8 @@
   "packages": {
     ".": {
       "changelog-path": "CHANGELOG.md",
-      "extra-files": ["crumbz.php"]
+      "extra-files": ["crumbz.php"],
+      "draft": true
     }
   }
 }
