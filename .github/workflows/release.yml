@@ -15,6 +15,7 @@ jobs:
     outputs:
       release_created: ${{ steps.rp.outputs.release_created }}
       tag_name: ${{ steps.rp.outputs.tag_name }}
+      pr: ${{ steps.rp.outputs.pr }}
     steps:
       # Opens or updates the release PR from merged Conventional Commit PRs. Merging that PR
       # creates the tag and the GitHub release. RELEASE_PLEASE_TOKEN is used so the release PR
@@ -32,17 +33,25 @@ jobs:
     if: needs.release-please.result == 'success'
     runs-on: ubuntu-latest
     steps:
-      # Turns on auto-merge for the open release PR. GitHub merges it once the required checks pass.
+      # Turns on auto-merge for the release PR that release-please just opened or updated. The PR is taken
+      # from release-please's own output, and its head branch must be release-please's branch.
+      # GitHub merges it once the required checks pass.
       - name: Enable auto-merge on the release PR
         env:
           GH_TOKEN: ${{ secrets.RELEASE_PLEASE_TOKEN || secrets.GITHUB_TOKEN }}
+          PR_JSON: ${{ needs.release-please.outputs.pr }}
         run: |
-          pr=$(gh pr list --label "autorelease: pending" --state open --json number --jq '.[0].number // empty')
-          if [ -n "$pr" ]; then
-            gh pr merge "$pr" --auto --squash
-          else
-            echo "No open release PR."
+          if [ -z "$PR_JSON" ]; then
+            echo "No release PR from this run."
+            exit 0
           fi
+          number=$(jq -r '.number // empty' <<< "$PR_JSON")
+          head=$(jq -r '.headBranchName // empty' <<< "$PR_JSON")
+          if [[ ! "$number" =~ ^[0-9]+$ ]] || [ "$head" != "release-please--branches--main" ]; then
+            echo "::error::Release PR output did not match the expected release branch. Not enabling auto-merge."
+            exit 1
+          fi
+          gh pr merge "$number" -R "$GITHUB_REPOSITORY" --auto --squash
 
   build-zip:
     name: build-zip
