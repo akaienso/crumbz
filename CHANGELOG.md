@@ -2,6 +2,15 @@
 
 All notable changes to Crumbz are recorded here. Release notes are generated from merged pull requests by release-please.
 
+## [0.1.8](https://github.com/akaienso/crumbz/compare/v0.1.7...v0.1.8) (2026-11-18)
+
+
+### Bug Fixes
+
+* keep page output independent of the consent cookie ([#1](https://github.com/akaienso/crumbz/issues/1)) ([7105403](https://github.com/akaienso/crumbz/commit/7105403a2d03348ebff6efb8a374a96c4256cc7c))
+* publish releases only after the zip is attached ([#7](https://github.com/akaienso/crumbz/issues/7)) ([4865826](https://github.com/akaienso/crumbz/commit/48658260331669829f262a8ecdfb455e574d4a88))
+* revive only plugin-printed blocked tags ([#4](https://github.com/akaienso/crumbz/issues/4)) ([3ab6922](https://github.com/akaienso/crumbz/commit/3ab692278b358753936ae01ca18375ea2b7b31e9))
+
 ## [0.1.7](https://github.com/akaienso/crumbz/compare/v0.1.6...v0.1.7) (2026-11-18)
 
 
