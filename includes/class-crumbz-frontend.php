@@ -12,7 +12,7 @@ class Crumbz_Frontend {
     public static function init(): void {
         add_action('wp_enqueue_scripts', [__CLASS__, 'enqueue']);
         add_action('wp_head', [__CLASS__, 'head_snippets'], 1);
-        add_action('send_headers', [__CLASS__, 'vary_headers']);
+        add_action('init', [__CLASS__, 'vary_headers']);
     }
 
     /**

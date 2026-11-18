@@ -51,7 +51,7 @@ jobs:
             echo "::error::Release PR output did not match the expected release branch. Not enabling auto-merge."
             exit 1
           fi
-          gh pr merge "$number" --auto --squash
+          gh pr merge "$number" -R "$GITHUB_REPOSITORY" --auto --squash
 
   build-zip:
     name: build-zip

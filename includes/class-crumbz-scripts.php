@@ -40,11 +40,19 @@ class Crumbz_Scripts {
 
     /** Rewrites every <script> opening tag in $html so it stays inert until allowed. */
     public static function block_html(string $html, string $cat): string {
-        $html = (string) preg_replace('/(<script\b[^>]*?)\s+type\s*=\s*(["\']?)[^"\'\s>]*\2/i', '$1', $html);
-        return (string) preg_replace(
-            '/<script\b/i',
-            '<script type="text/plain" data-crumbz-category="' . esc_attr($cat) . '"',
-            $html
-        );
+        // The original type (for example type="module") is kept in data-crumbz-type, so frontend.js can restore it.
+        return (string) preg_replace_callback('/<script\b[^>]*>/i', static function ($m) use ($cat) {
+            $tag  = $m[0];
+            $orig = '';
+            if (preg_match('/\stype\s*=\s*(["\']?)([^"\'\s>]*)\1/i', $tag, $t)) {
+                $orig = $t[2];
+                $tag  = (string) preg_replace('/\stype\s*=\s*(["\']?)[^"\'\s>]*\1/i', '', $tag, 1);
+            }
+            $extra = 'type="text/plain" data-crumbz-category="' . esc_attr($cat) . '"';
+            if ($orig !== '') {
+                $extra .= ' data-crumbz-type="' . esc_attr($orig) . '"';
+            }
+            return (string) preg_replace('/<script\b/i', '<script ' . $extra, $tag, 1);
+        }, $html);
     }
 }

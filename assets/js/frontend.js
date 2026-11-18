@@ -116,16 +116,27 @@
         Array.prototype.forEach.call(nodes, function (old) {
             var cat = old.getAttribute('data-crumbz-category');
             if (!allowed(cat)) { return; }
-            var s = document.createElement('script');
-            Array.prototype.forEach.call(old.attributes, function (a) {
-                if (a.name !== 'type' && a.name !== 'data-crumbz-category') {
-                    s.setAttribute(a.name, a.value);
-                }
-            });
-            s.text = old.textContent;
-            old.parentNode.replaceChild(s, old);
+            old.parentNode.replaceChild(recreateScript(old), old);
         });
         unblockTemplates();
+    }
+
+    /**
+     * Makes an executable copy of a blocked script. The original type (such as module) is restored,
+     * and external scripts keep document order (async = false), so dependent scripts run in sequence.
+     */
+    function recreateScript(old) {
+        var s = document.createElement('script');
+        Array.prototype.forEach.call(old.attributes, function (a) {
+            if (a.name !== 'type' && a.name !== 'data-crumbz-category' && a.name !== 'data-crumbz-type') {
+                s.setAttribute(a.name, a.value);
+            }
+        });
+        var origType = old.getAttribute('data-crumbz-type');
+        if (origType) { s.setAttribute('type', origType); }
+        if (s.src) { s.async = false; }
+        s.text = old.textContent;
+        return s;
     }
 
     /** Moves allowed head snippets out of their inert <template> wrappers into the page. */
@@ -135,10 +146,7 @@
             if (!allowed(tpl.getAttribute('data-crumbz-category'))) { return; }
             var frag = tpl.content.cloneNode(true);
             Array.prototype.forEach.call(frag.querySelectorAll('script'), function (old) {
-                var s = document.createElement('script');
-                Array.prototype.forEach.call(old.attributes, function (a) { s.setAttribute(a.name, a.value); });
-                s.text = old.textContent;
-                old.parentNode.replaceChild(s, old);
+                old.parentNode.replaceChild(recreateScript(old), old);
             });
             (document.head || document.documentElement).appendChild(frag);
             tpl.parentNode.removeChild(tpl);
@@ -544,6 +552,14 @@
         } else {
             banner.hidden = false;
         }
+        // Scripts added to the page after this point (for example by other scripts) are checked too.
+        if (window.MutationObserver) {
+            new MutationObserver(function (records) {
+                for (var i = 0; i < records.length; i++) {
+                    if (records[i].addedNodes.length) { unblock(); return; }
+                }
+            }).observe(document.documentElement, { childList: true, subtree: true });
+        }
         // Any dismissal of the banner that is not an Accept click is a refusal, Escape included.
         document.addEventListener('keydown', function (e) {
             if (e.key === 'Escape' && !record && !banner.hidden && !dialog.open) {
@@ -553,9 +569,12 @@
         unblock();
     }
 
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', init);
-    } else {
+    // This script is loaded in the footer, so the body already exists. Starting now (not on
+    // DOMContentLoaded) lets allowed scripts and snippets run during parsing, so their own
+    // DOMContentLoaded handlers and document.write calls behave normally.
+    if (document.body) {
         init();
+    } else {
+        document.addEventListener('DOMContentLoaded', init);
     }
 })();
