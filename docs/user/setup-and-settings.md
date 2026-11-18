@@ -27,6 +27,10 @@ Go to **Crumbz > Settings**.
 | Category snippets | Tracking code that Crumbz prints only after its category is allowed. Requires an administrator with unfiltered HTML access. |
 | Wording | The banner and dialog text. |
 
+## Upgrading
+
+After you update Crumbz, clear your full-page cache (the caching plugin's "Clear cache" button, or your host's or CDN's purge). Pages cached before the update do not have the new markers, so their optional scripts stay blocked until the cache is cleared. Visitors then get the new version of each page.
+
 ## Link your policy pages
 
 1. Publish your Cookie Policy, Privacy Policy, and Terms pages in WordPress. Drafts are not shown to visitors.
