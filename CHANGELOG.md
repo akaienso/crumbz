@@ -2,6 +2,13 @@
 
 All notable changes to Crumbz are recorded here. Release notes are generated from merged pull requests by release-please.
 
+## [0.1.3](https://github.com/akaienso/crumbz/compare/v0.1.2...v0.1.3) (2026-11-18)
+
+
+### Bug Fixes
+
+* publish releases only after the zip is attached ([#7](https://github.com/akaienso/crumbz/issues/7)) ([4865826](https://github.com/akaienso/crumbz/commit/48658260331669829f262a8ecdfb455e574d4a88))
+
 ## [0.1.2](https://github.com/akaienso/crumbz/compare/v0.1.1...v0.1.2) (2026-11-18)
 
 
