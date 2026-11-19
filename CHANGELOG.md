@@ -2,6 +2,13 @@
 
 All notable changes to Crumbz are recorded here. Release notes are generated from merged pull requests by release-please.
 
+## [0.2.0](https://github.com/akaienso/crumbz/compare/v0.1.17...v0.2.0) (2026-11-19)
+
+
+### Features
+
+* visual redesign, styling modes, bundled typefaces and icons ([#24](https://github.com/akaienso/crumbz/issues/24)) ([00c76de](https://github.com/akaienso/crumbz/commit/00c76de3c05272ffc0d776efd408986b3a6cce88))
+
 ## [0.1.17](https://github.com/akaienso/crumbz/compare/v0.1.16...v0.1.17) (2026-11-18)
 
 
