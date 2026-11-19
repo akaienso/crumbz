@@ -98,8 +98,17 @@
 }
 
 .crumbz :where(h2, h3, p, ul, li) {
+    margin: 0;
     padding: 0;
     border: 0;
+}
+
+.crumbz :where(h2, h3, p, li, label) {
+    color: var(--crumbz-fg);
+}
+
+.crumbz :where(p) {
+    line-height: inherit;
 }
 
 .crumbz :where(button) {
