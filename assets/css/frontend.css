@@ -79,6 +79,52 @@
     box-sizing: border-box;
 }
 
+/* Isolation: site themes often style bare h2, p, ul and button elements. These resets have the
+   specificity of one class, so they beat bare element rules but lose to the plugin's own rules. */
+.crumbz :where(h2, h3, p, ul, li, button, label) {
+    font-family: inherit;
+    text-transform: none;
+    letter-spacing: normal;
+    text-shadow: none;
+    text-indent: 0;
+    float: none;
+    width: auto;
+    max-width: none;
+    height: auto;
+    position: static;
+    background-image: none;
+    box-shadow: none;
+    filter: none;
+}
+
+.crumbz :where(h2, h3, p, ul, li) {
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+.crumbz :where(h2, h3, p, li, label) {
+    color: var(--crumbz-fg);
+}
+
+.crumbz :where(p) {
+    line-height: inherit;
+}
+
+.crumbz :where(button) {
+    margin: 0;
+    line-height: 1.2;
+    text-decoration: none;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.crumbz .crumbz-title {
+    color: var(--crumbz-fg);
+    font-size: 1.25rem;
+    line-height: 1.25;
+}
+
 .crumbz {
     font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     color: var(--crumbz-fg);
@@ -161,8 +207,9 @@
 
 .crumbz-head {
     display: flex;
-    align-items: flex-start;
-    gap: 12px;
+    align-items: center;
+    gap: 4px;
+    margin: -6px -8px 6px 0;
 }
 
 .crumbz-title {
@@ -170,7 +217,7 @@
     font-weight: 700;
     line-height: 1.25;
     letter-spacing: -0.01em;
-    margin: 0 0 8px;
+    margin: 0;
     flex: 1 1 auto;
 }
 
@@ -238,7 +285,7 @@
     order: 3;
     flex: 1 0 100%;
     min-height: 40px;
-    text-align: left;
+    justify-content: flex-start;
     padding-left: 0;
     padding-right: 0;
 }
@@ -281,16 +328,35 @@
     cursor: pointer;
 }
 
-.crumbz-btn-theme {
-    min-width: 0;
-    min-height: 36px;
-    padding: 4px 12px;
-    font-size: 0.875rem;
-    border-radius: 999px;
-    background: var(--crumbz-surface);
+.crumbz-theme-btn {
+    flex: 0 0 auto;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 0;
+    border-radius: 10px;
+    background: transparent;
     color: var(--crumbz-fg);
-    border-color: var(--crumbz-border);
+    cursor: pointer;
+}
+
+.crumbz-theme-btn:hover {
+    background: var(--crumbz-surface);
+}
+
+.crumbz-sr {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
     white-space: nowrap;
+    border: 0;
 }
 
 .crumbz-icon {

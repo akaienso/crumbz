@@ -249,14 +249,29 @@
         updateThemeButtons();
     }
 
+    var THEME_ICONS = {
+        auto: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 18a6 6 0 0 0 0-12v12z" fill="currentColor"/></svg>',
+        light: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>',
+        dark: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9z"/></svg>'
+    };
+
     function updateThemeButtons() {
         var names = { auto: t('themeAuto', 'Auto'), light: t('themeLight', 'Light'), dark: t('themeDark', 'Dark') };
-        var label = t('themeLabel', 'Theme') + ': ' + names[currentTheme()];
-        themeButtons.forEach(function (b) { b.textContent = label; });
+        var cur = currentTheme();
+        var label = t('themeLabel', 'Theme') + ': ' + names[cur];
+        themeButtons.forEach(function (b) {
+            b.setAttribute('title', label);
+            while (b.firstChild) { b.removeChild(b.firstChild); }
+            var icon = el('span', { class: 'crumbz-icon', 'aria-hidden': 'true' });
+            var node = svgNode(THEME_ICONS[cur]);
+            if (node) { icon.appendChild(node); }
+            b.appendChild(icon);
+            b.appendChild(el('span', { class: 'crumbz-sr', text: label }));
+        });
     }
 
     function themeButton() {
-        var b = el('button', { type: 'button', class: 'crumbz-btn crumbz-btn-theme' });
+        var b = el('button', { type: 'button', class: 'crumbz-theme-btn' });
         b.addEventListener('click', function () {
             var i = THEMES.indexOf(currentTheme());
             setTheme(THEMES[(i + 1) % THEMES.length]);
@@ -271,7 +286,6 @@
         var kids = [
             el('div', { class: 'crumbz-head' }, [
                 el('h2', { class: 'crumbz-title', id: 'crumbz-banner-title', text: t('bannerTitle', 'Your choices about cookies') }),
-                themeButton(),
                 closeButton(rejectAll)
             ]),
             el('p', { class: 'crumbz-msg', text: t('bannerMessage', '') })
