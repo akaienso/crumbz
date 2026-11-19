@@ -58,9 +58,15 @@ class Crumbz_Admin {
         $option = Crumbz_Settings::OPTION;
 
         echo '<div class="wrap crumbz-admin">';
-        echo '<h1>' . esc_html__('Crumbz', 'crumbz') . '</h1>';
+        echo '<div class="crumbz-hero"><div class="crumbz-brand"><span class="crumbz-mark" aria-hidden="true">C</span><h1>' . esc_html__('Crumbz', 'crumbz') . '</h1><span class="crumbz-tagline">' . esc_html__('Consent for WordPress', 'crumbz') . '</span></div>';
+        echo '<a class="crumbz-hero-action" href="' . esc_url(admin_url('admin.php?page=crumbz-wizard')) . '">' . esc_html__('Open the policy wizard', 'crumbz') . '</a></div>';
         echo '<p class="crumbz-lead">' . esc_html__('Consent-first cookie banner. Nothing optional runs, and no optional cookie is set, until a visitor makes a choice.', 'crumbz') . '</p>';
-        echo '<p><a class="button" href="' . esc_url(admin_url('admin.php?page=crumbz-wizard')) . '">' . esc_html__('Open the policy wizard', 'crumbz') . '</a></p>';
+        echo '<div class="crumbz-tiles">';
+        self::tile(__('Banner', 'crumbz'), !empty($s['enabled']) ? __('On', 'crumbz') : __('Off', 'crumbz'), !empty($s['enabled']) ? __('Blocking optional scripts', 'crumbz') : __('Visitors see no banner', 'crumbz'), !empty($s['enabled']));
+        self::tile(__('Automatic updates', 'crumbz'), !empty($s['auto_update']) ? __('On', 'crumbz') : __('Off', 'crumbz'), __('Checks about twice a day', 'crumbz'), !empty($s['auto_update']));
+        self::tile(__('Policy revision', 'crumbz'), (string) Crumbz_Settings::revision(), __('Visitors see the banner again on change', 'crumbz'), null);
+        self::tile(__('Plugin version', 'crumbz'), CRUMBZ_VERSION, __('Installed release', 'crumbz'), null);
+        echo '</div>';
         settings_errors();
 
         echo '<form method="post" action="options.php">';
@@ -70,7 +76,7 @@ class Crumbz_Admin {
         self::row(__('Crumbz is on', 'crumbz'), self::checkbox($option . '[enabled]', !empty($s['enabled']), __('Show the banner and icon, and block optional scripts', 'crumbz')));
         self::row(__('Automatic updates', 'crumbz'), self::checkbox($option . '[auto_update]', !empty($s['auto_update']), __('Install new Crumbz releases automatically', 'crumbz')), __('WordPress checks on its usual schedule, about twice a day. Turn this off to update by hand from the Plugins screen. Current version: ', 'crumbz') . CRUMBZ_VERSION);
         self::row(__('Banner position', 'crumbz'), self::select($option . '[banner_position]', [
-            'bottom' => __('Bottom bar', 'crumbz'),
+            'bottom' => __('Bottom card', 'crumbz'),
             'top'    => __('Top bar', 'crumbz'),
             'modal'  => __('Centered panel', 'crumbz'),
         ], $s['banner_position']));
@@ -190,6 +196,13 @@ class Crumbz_Admin {
             $name .= '[' . $part . ']';
         }
         return $name;
+    }
+
+    private static function tile(string $label, string $value, string $note, ?bool $good): void {
+        $class = $good === null ? '' : ($good ? ' is-good' : ' is-off');
+        echo '<div class="crumbz-tile' . $class . '"><span class="crumbz-tile-label">' . esc_html($label) . '</span>';
+        echo '<span class="crumbz-tile-value">' . esc_html($value) . '</span>';
+        echo '<span class="crumbz-tile-note">' . esc_html($note) . '</span></div>';
     }
 
     private static function row(string $label, string $control, string $help = ''): void {

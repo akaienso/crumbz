@@ -1,15 +1,189 @@
-/* Crumbz admin styles. GPL-2.0-or-later. */
+/* Crumbz admin styles. GPL-2.0-or-later. Colors are in docs/developer/design-tokens.md. */
+
+.crumbz-admin {
+    color: #15171c;
+}
+
+/* ---------- header band ---------- */
+
+.crumbz-admin .crumbz-hero {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin: 16px 0 20px;
+    padding: 22px 28px;
+    background: #15171c;
+    border-radius: 16px;
+}
+
+.crumbz-admin .crumbz-brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+
+.crumbz-admin .crumbz-mark {
+    display: grid;
+    place-items: center;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: #ffc53d;
+    color: #15171c;
+    font: 800 20px/1 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+.crumbz-admin .crumbz-hero h1 {
+    margin: 0;
+    padding: 0;
+    color: #ffffff;
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+}
+
+.crumbz-admin .crumbz-tagline {
+    color: #a7aebb;
+    font-size: 15px;
+}
+
+.crumbz-admin .crumbz-hero-action {
+    padding: 12px 18px;
+    border-radius: 10px;
+    background: #ffc53d;
+    color: #15171c;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.crumbz-admin .crumbz-hero-action:hover,
+.crumbz-admin .crumbz-hero-action:focus {
+    background: #f2b11e;
+    color: #15171c;
+}
 
 .crumbz-admin .crumbz-lead {
     font-size: 1.05rem;
+    color: #545b68;
     max-width: 60em;
+    margin: 0 0 20px;
+}
+
+/* ---------- status tiles ---------- */
+
+.crumbz-admin .crumbz-tiles {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+    margin: 0 0 8px;
+}
+
+.crumbz-admin .crumbz-tile {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 18px 20px;
+    background: #ffffff;
+    border: 1.5px solid #7d8694;
+    border-radius: 14px;
+}
+
+.crumbz-admin .crumbz-tile-label {
+    color: #545b68;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.crumbz-admin .crumbz-tile-value {
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+}
+
+.crumbz-admin .crumbz-tile-note {
+    color: #545b68;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.3;
+}
+
+.crumbz-admin .crumbz-tile.is-good .crumbz-tile-note {
+    color: #1e7a4c;
+}
+
+.crumbz-admin .crumbz-tile.is-off .crumbz-tile-note {
+    color: #8a1c1c;
+}
+
+@media (max-width: 960px) {
+    .crumbz-admin .crumbz-tiles {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+/* ---------- sections and cards ---------- */
+
+.crumbz-admin h2 {
+    margin: 36px 0 8px;
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: #15171c;
+}
+
+.crumbz-admin .description {
+    color: #545b68;
+    font-size: 14px;
+}
+
+.crumbz-admin .form-table {
+    background: #ffffff;
+    border: 1.5px solid #7d8694;
+    border-radius: 14px;
+    margin-top: 8px;
+    overflow: hidden;
+}
+
+.crumbz-admin .form-table th,
+.crumbz-admin .form-table td {
+    padding: 18px 20px;
+}
+
+.crumbz-admin .form-table th {
+    width: 240px;
+    font-weight: 600;
+    color: #15171c;
+}
+
+.crumbz-admin .form-table tr + tr > * {
+    border-top: 1px solid #e3e6ec;
+}
+
+.crumbz-admin table.widefat {
+    background: #ffffff;
+    border: 1.5px solid #7d8694;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: none;
+}
+
+.crumbz-admin table.widefat thead th {
+    background: #f4f5f7;
+    color: #15171c;
+    font-weight: 600;
 }
 
 .crumbz-admin .crumbz-note {
     max-width: 60em;
-    padding: 10px 14px;
-    border-left: 4px solid #2271b1;
-    background: #f0f6fc;
+    padding: 12px 16px;
+    border-left: 4px solid #ffc53d;
+    border-radius: 0 10px 10px 0;
+    background: #fff9e6;
+    color: #15171c;
 }
 
 .crumbz-admin .crumbz-docs input.regular-text,
@@ -17,8 +191,40 @@
     max-width: 100%;
 }
 
+.crumbz-admin input[type="text"],
+.crumbz-admin input[type="url"],
+.crumbz-admin input[type="number"],
+.crumbz-admin select,
+.crumbz-admin textarea {
+    border: 1.5px solid #7d8694;
+    border-radius: 8px;
+    box-shadow: none;
+}
+
+.crumbz-admin .button-primary {
+    background: #15171c;
+    border-color: #15171c;
+    color: #ffc53d;
+    border-radius: 10px;
+    padding: 6px 20px;
+    font-weight: 700;
+    text-shadow: none;
+    box-shadow: none;
+}
+
+.crumbz-admin .button-primary:hover,
+.crumbz-admin .button-primary:focus {
+    background: #2b2f38;
+    border-color: #2b2f38;
+    color: #ffd166;
+}
+
+.crumbz-admin .button {
+    border-radius: 10px;
+}
+
 .crumbz-admin .crumbz-progress {
-    color: #50575e;
+    color: #545b68;
     margin-bottom: 0;
 }
 

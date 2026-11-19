@@ -16,7 +16,7 @@ Go to **Crumbz > Settings**.
 |---|---|
 | Crumbz is on | Shows the banner and icon, and blocks optional scripts. Off means Crumbz does nothing on the site. |
 | Automatic updates | Installs new Crumbz releases on WordPress's schedule. Turn it off to update by hand. |
-| Banner position | Bottom bar, top bar, or a centered panel. |
+| Banner position | Bottom card (a floating card in the bottom-left corner), top bar, or a centered panel. |
 | Settings icon position | Bottom left, bottom center, bottom right, top left, top center, or top right. Visitors can drag it anywhere. |
 | Default theme | Auto (follows the visitor's system), light, or dark. |
 | Cookie lifetime | How many days a visitor's choice is remembered. Default 180. |
