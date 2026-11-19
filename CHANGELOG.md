@@ -2,6 +2,13 @@
 
 All notable changes to Crumbz are recorded here. Release notes are generated from merged pull requests by release-please.
 
+## [0.2.1](https://github.com/akaienso/crumbz/compare/v0.2.0...v0.2.1) (2026-11-19)
+
+
+### Bug Fixes
+
+* keep the banner readable on any site theme ([#27](https://github.com/akaienso/crumbz/issues/27)) ([c229b59](https://github.com/akaienso/crumbz/commit/c229b594c2a2becdda50a6e128d67a0605e9aa32))
+
 ## [0.2.0](https://github.com/akaienso/crumbz/compare/v0.1.17...v0.2.0) (2026-11-19)
 
 
