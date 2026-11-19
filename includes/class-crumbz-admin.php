@@ -68,6 +68,10 @@ class Crumbz_Admin {
         self::tile(__('Plugin version', 'crumbz'), CRUMBZ_VERSION, __('Installed release', 'crumbz'), null);
         echo '</div>';
         settings_errors();
+        if (isset($_GET['crumbz_notice'])) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+            $ok = isset($_GET['crumbz_type']) && $_GET['crumbz_type'] === 'updated'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+            echo '<div class="notice ' . ($ok ? 'notice-success' : 'notice-error') . ' is-dismissible"><p>' . esc_html(sanitize_text_field(wp_unslash((string) $_GET['crumbz_notice']))) . '</p></div>'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+        }
 
         echo '<form method="post" action="options.php">';
         settings_fields('crumbz');
@@ -76,7 +80,7 @@ class Crumbz_Admin {
         self::row(__('Crumbz is on', 'crumbz'), self::checkbox($option . '[enabled]', !empty($s['enabled']), __('Show the banner and icon, and block optional scripts', 'crumbz')));
         self::row(__('Automatic updates', 'crumbz'), self::checkbox($option . '[auto_update]', !empty($s['auto_update']), __('Install new Crumbz releases automatically', 'crumbz')), __('WordPress checks on its usual schedule, about twice a day. Turn this off to update by hand from the Plugins screen. Current version: ', 'crumbz') . CRUMBZ_VERSION);
         self::row(__('Banner position', 'crumbz'), self::select($option . '[banner_position]', [
-            'bottom' => __('Bottom card', 'crumbz'),
+            'bottom' => __('Bottom', 'crumbz'),
             'top'    => __('Top bar', 'crumbz'),
             'modal'  => __('Centered panel', 'crumbz'),
         ], $s['banner_position']));
@@ -94,6 +98,34 @@ class Crumbz_Admin {
             'dark'  => __('Dark', 'crumbz'),
         ], $s['theme']));
         self::row(__('Cookie lifetime (days)', 'crumbz'), '<input type="number" min="1" max="730" name="' . esc_attr($option . '[cookie_lifetime_days]') . '" value="' . esc_attr((string) $s['cookie_lifetime_days']) . '">');
+        echo '</table>';
+
+        echo '<h2>' . esc_html__('Look', 'crumbz') . '</h2>';
+        echo '<p class="description">' . esc_html__('Choose how the banner, the dialog, and the settings icon look. Plugin styling uses the colors and typefaces below. My theme leaves the look to your theme’s CSS classes.', 'crumbz') . '</p>';
+        echo '<table class="form-table" role="presentation">';
+        self::row(__('Banner shape', 'crumbz'), self::select($option . '[banner_shape]', [
+            'card' => __('Floating card', 'crumbz'),
+            'bar'  => __('Full-width bar', 'crumbz'),
+        ], $s['banner_shape']), __('The floating card sits in the corner. The bar spans the bottom of the page. Applies when the banner is at the bottom.', 'crumbz'));
+        self::row(__('Styling', 'crumbz'), self::radio($option . '[style_mode]', [
+            'plugin' => __('Plugin styling: use the colors and typefaces below', 'crumbz'),
+            'theme'  => __('My theme: use the class names below, which my theme already styles', 'crumbz'),
+        ], $s['style_mode']));
+        $colors = (array) $s['colors'];
+        self::row(__('Primary color', 'crumbz'), self::color($option . '[colors][primary]', $colors['primary']), __('Accept button and the settings icon. The text on it is chosen automatically for contrast.', 'crumbz'));
+        self::row(__('Secondary color', 'crumbz'), self::color($option . '[colors][secondary]', $colors['secondary']) . self::contrast_note($colors['secondary'], '#ffffff'), __('Reject and Save buttons, and their outline.', 'crumbz'));
+        self::row(__('Tertiary color', 'crumbz'), self::color($option . '[colors][tertiary]', $colors['tertiary']) . self::contrast_note($colors['tertiary'], '#ffffff'), __('Customize and the links in the banner.', 'crumbz'));
+        self::row(__('Primary typeface', 'crumbz'), self::select($option . '[fonts][primary]', self::font_options($s), $s['fonts']['primary']), __('Headings and buttons.', 'crumbz'));
+        self::row(__('Secondary typeface', 'crumbz'), self::select($option . '[fonts][secondary]', self::font_options($s), $s['fonts']['secondary']), __('Body text.', 'crumbz'));
+        $classes = (array) $s['theme_classes'];
+        self::row(__('Primary theme class', 'crumbz'), '<input type="text" class="regular-text code" name="' . esc_attr($option . '[theme_classes][primary]') . '" value="' . esc_attr($classes['primary']) . '">', __('Added to the Accept button and the settings icon. Separate several classes with spaces.', 'crumbz'));
+        self::row(__('Secondary theme class', 'crumbz'), '<input type="text" class="regular-text code" name="' . esc_attr($option . '[theme_classes][secondary]') . '" value="' . esc_attr($classes['secondary']) . '">', __('Added to Reject and Save.', 'crumbz'));
+        self::row(__('Tertiary theme class', 'crumbz'), '<input type="text" class="regular-text code" name="' . esc_attr($option . '[theme_classes][tertiary]') . '" value="' . esc_attr($classes['tertiary']) . '">', __('Added to Customize.', 'crumbz'));
+        $icons = (array) $s['icons'];
+        self::row(__('Accept icon', 'crumbz'), self::select($option . '[icons][accept]', Crumbz_Settings::icon_choices(), $icons['accept']));
+        self::row(__('Reject icon', 'crumbz'), self::select($option . '[icons][reject]', Crumbz_Settings::icon_choices(), $icons['reject']));
+        self::row(__('Customize icon', 'crumbz'), self::select($option . '[icons][customize]', Crumbz_Settings::icon_choices(), $icons['customize']));
+        self::row(__('Settings icon', 'crumbz'), self::select($option . '[icons][settings]', Crumbz_Settings::icon_choices(), $icons['settings']));
         echo '</table>';
 
         echo '<h2>' . esc_html__('Jurisdictions', 'crumbz') . '</h2>';
@@ -187,7 +219,76 @@ class Crumbz_Admin {
         )) . '</p>';
 
         submit_button(__('Save Crumbz settings', 'crumbz'));
-        echo '</form></div>';
+        echo '</form>';
+        self::render_fonts($s);
+        echo '</div>';
+    }
+
+    private static function render_fonts(array $s): void {
+        echo '<h2>' . esc_html__('Your typefaces', 'crumbz') . '</h2>';
+        echo '<p class="description">' . esc_html__('Upload WOFF2 or WOFF files of 2 MB or less. Uploads are stored in your uploads folder and are deleted when Crumbz is deleted. Upload only fonts you are licensed to use on this site.', 'crumbz') . '</p>';
+
+        $fonts = Crumbz_Settings::custom_font_list($s);
+        if ($fonts) {
+            echo '<table class="widefat striped"><thead><tr><th>' . esc_html__('Name', 'crumbz') . '</th><th>' . esc_html__('File', 'crumbz') . '</th><th><span class="screen-reader-text">' . esc_html__('Actions', 'crumbz') . '</span></th></tr></thead><tbody>';
+            foreach ($fonts as $slug => $font) {
+                echo '<tr><td>' . esc_html((string) $font['name']) . '</td><td><code>' . esc_html((string) $font['file']) . '</code></td><td>';
+                echo '<form method="post" action="' . esc_url(admin_url('admin-post.php')) . '">';
+                echo '<input type="hidden" name="action" value="crumbz_font_delete">';
+                echo '<input type="hidden" name="slug" value="' . esc_attr((string) $slug) . '">';
+                wp_nonce_field('crumbz_font_delete');
+                submit_button(__('Remove', 'crumbz'), 'secondary small', 'submit', false);
+                echo '</form></td></tr>';
+            }
+            echo '</tbody></table>';
+        } else {
+            echo '<p class="description">' . esc_html__('No uploaded typefaces yet.', 'crumbz') . '</p>';
+        }
+
+        echo '<form class="crumbz-upload" method="post" enctype="multipart/form-data" action="' . esc_url(admin_url('admin-post.php')) . '">';
+        echo '<input type="hidden" name="action" value="crumbz_font_upload">';
+        wp_nonce_field('crumbz_font_upload');
+        echo '<label>' . esc_html__('Name', 'crumbz') . ' <input type="text" class="regular-text" name="font_name" maxlength="60"></label> ';
+        echo '<input type="file" name="crumbz_font" accept=".woff2,.woff,font/woff2,font/woff"> ';
+        submit_button(__('Upload typeface', 'crumbz'), 'secondary', 'submit', false);
+        echo '</form>';
+    }
+
+    /** Typeface dropdown options: the bundled four, then any uploads. */
+    private static function font_options(array $s): array {
+        $options = [];
+        foreach (Crumbz_Settings::bundled_fonts() as $id => $font) {
+            $options[$id] = $font['label'];
+        }
+        foreach (Crumbz_Settings::custom_font_list($s) as $slug => $font) {
+            $options['custom:' . $slug] = (string) $font['name'];
+        }
+        return $options;
+    }
+
+    private static function color(string $name, string $value): string {
+        return '<input type="color" name="' . esc_attr($name) . '" value="' . esc_attr($value) . '">';
+    }
+
+    private static function radio(string $name, array $options, string $selected): string {
+        $html = '<fieldset>';
+        foreach ($options as $value => $label) {
+            $html .= '<label class="crumbz-radio"><input type="radio" name="' . esc_attr($name) . '" value="' . esc_attr((string) $value) . '"' . checked((string) $selected, (string) $value, false) . '> ' . esc_html($label) . '</label><br>';
+        }
+        return $html . '</fieldset>';
+    }
+
+    /** A warning when text in this color would fall below the WCAG 4.5:1 minimum on the background. */
+    private static function contrast_note(string $hex, string $background): string {
+        $ratio = Crumbz_Settings::contrast($hex, $background);
+        if ($ratio >= 4.5) {
+            return '';
+        }
+        return '<p class="crumbz-warn">' . esc_html(sprintf(
+            /* translators: %s: contrast ratio, such as 3.1 */
+            __('Low contrast: %s:1 on white. Text needs at least 4.5:1.', 'crumbz'),
+            number_format($ratio, 1)
+        )) . '</p>';
     }
 
     private static function name(string ...$path): string {

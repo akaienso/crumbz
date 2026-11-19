@@ -27,8 +27,15 @@ class Crumbz_Settings {
             'enabled'              => 1,
             'auto_update'          => 1,
             'banner_position'      => 'bottom',
+            'banner_shape'         => 'card',
             'button_position'      => 'bottom-left',
             'theme'                => 'auto',
+            'style_mode'           => 'plugin',
+            'colors'               => ['primary' => '#ffc53d', 'secondary' => '#15171c', 'tertiary' => '#15171c'],
+            'fonts'                => ['primary' => 'sans', 'secondary' => 'sans'],
+            'custom_fonts'         => [],
+            'theme_classes'        => ['primary' => '', 'secondary' => '', 'tertiary' => ''],
+            'icons'                => ['accept' => 'check', 'reject' => 'x', 'customize' => 'sliders-horizontal', 'settings' => 'cookie'],
             'jurisdictions'        => [],
             'documents'            => self::default_documents(),
             'cookie_lifetime_days' => 180,
@@ -37,6 +44,75 @@ class Crumbz_Settings {
             'detected_overrides'   => [],
             'text'                 => self::default_text(),
         ];
+    }
+
+    /** Bundled typefaces. Files are in assets/fonts and load from the plugin, never from another server. */
+    public static function bundled_fonts(): array {
+        return [
+            'sans'    => ['label' => __('Sans serif (Inter)', 'crumbz'), 'family' => '"Crumbz Sans", system-ui, sans-serif'],
+            'serif'   => ['label' => __('Serif (Source Serif 4)', 'crumbz'), 'family' => '"Crumbz Serif", Georgia, serif'],
+            'display' => ['label' => __('Display serif (Playfair Display)', 'crumbz'), 'family' => '"Crumbz Display", Georgia, serif'],
+            'mono'    => ['label' => __('Monospace (JetBrains Mono)', 'crumbz'), 'family' => '"Crumbz Mono", ui-monospace, monospace'],
+        ];
+    }
+
+    /** Lucide icons (ISC). Names are the only values the icon settings accept. */
+    public static function icon_choices(): array {
+        return [
+            'check'             => __('Check', 'crumbz'),
+            'circle-check'      => __('Check in circle', 'crumbz'),
+            'x'                 => __('Close', 'crumbz'),
+            'circle-x'          => __('Close in circle', 'crumbz'),
+            'ban'               => __('Ban', 'crumbz'),
+            'sliders-horizontal' => __('Sliders', 'crumbz'),
+            'settings'          => __('Gear', 'crumbz'),
+            'cookie'            => __('Cookie', 'crumbz'),
+            'shield-check'      => __('Shield', 'crumbz'),
+            'lock'              => __('Lock', 'crumbz'),
+            'none'              => __('No icon', 'crumbz'),
+        ];
+    }
+
+    /** Uploaded fonts, keyed by their slug. */
+    public static function custom_font_list(array $s): array {
+        $out = [];
+        foreach ((array) ($s['custom_fonts'] ?? []) as $font) {
+            if (is_array($font) && !empty($font['slug'])) {
+                $out[(string) $font['slug']] = $font;
+            }
+        }
+        return $out;
+    }
+
+    /** Every typeface id the settings may point at: bundled ids plus uploaded fonts as custom:slug. */
+    public static function font_ids(array $s): array {
+        $ids = array_keys(self::bundled_fonts());
+        foreach (array_keys(self::custom_font_list($s)) as $slug) {
+            $ids[] = 'custom:' . $slug;
+        }
+        return $ids;
+    }
+
+    /** WCAG contrast ratio between two hex colors. */
+    public static function contrast(string $a, string $b): float {
+        $la = self::luminance($a);
+        $lb = self::luminance($b);
+        return (max($la, $lb) + 0.05) / (min($la, $lb) + 0.05);
+    }
+
+    public static function luminance(string $hex): float {
+        $hex = ltrim($hex, '#');
+        $rgb = [];
+        foreach ([0, 2, 4] as $i) {
+            $c = hexdec(substr($hex, $i, 2)) / 255;
+            $rgb[] = $c <= 0.03928 ? $c / 12.92 : pow(($c + 0.055) / 1.055, 2.4);
+        }
+        return 0.2126 * $rgb[0] + 0.7152 * $rgb[1] + 0.0722 * $rgb[2];
+    }
+
+    /** Black or white text, whichever reads better on the given fill. */
+    public static function readable_on(string $fill): string {
+        return self::contrast($fill, '#ffffff') >= self::contrast($fill, '#15171c') ? '#ffffff' : '#15171c';
     }
 
     public static function default_documents(): array {
@@ -162,6 +238,38 @@ class Crumbz_Settings {
         $out['banner_position'] = self::pick($in, 'banner_position', ['bottom', 'top', 'modal'], $d['banner_position']);
         $out['button_position'] = self::pick($in, 'button_position', ['bottom-left', 'bottom-center', 'bottom-right', 'top-left', 'top-center', 'top-right'], $d['button_position']);
         $out['theme']           = self::pick($in, 'theme', ['auto', 'light', 'dark'], $d['theme']);
+        $out['banner_shape']    = self::pick($in, 'banner_shape', ['card', 'bar'], $d['banner_shape']);
+        $out['style_mode']      = self::pick($in, 'style_mode', ['plugin', 'theme'], $d['style_mode']);
+
+        $out['custom_fonts'] = array_values(self::custom_font_list($current));
+        $posted_colors = is_array($in['colors'] ?? null) ? $in['colors'] : [];
+        $out['colors'] = [];
+        foreach ($d['colors'] as $role => $default) {
+            $hex = sanitize_hex_color((string) ($posted_colors[$role] ?? ''));
+            $out['colors'][$role] = $hex ?: ($current['colors'][$role] ?? $default);
+        }
+
+        $posted_fonts = is_array($in['fonts'] ?? null) ? $in['fonts'] : [];
+        $font_ids = self::font_ids($out);
+        $out['fonts'] = [];
+        foreach ($d['fonts'] as $role => $default) {
+            $out['fonts'][$role] = in_array((string) ($posted_fonts[$role] ?? ''), $font_ids, true)
+                ? (string) $posted_fonts[$role]
+                : (string) ($current['fonts'][$role] ?? $default);
+        }
+
+        $posted_classes = is_array($in['theme_classes'] ?? null) ? $in['theme_classes'] : [];
+        $out['theme_classes'] = [];
+        foreach ($d['theme_classes'] as $role => $default) {
+            $names = preg_split('/\s+/', trim((string) ($posted_classes[$role] ?? '')), -1, PREG_SPLIT_NO_EMPTY) ?: [];
+            $out['theme_classes'][$role] = implode(' ', array_filter(array_map('sanitize_html_class', $names)));
+        }
+
+        $posted_icons = is_array($in['icons'] ?? null) ? $in['icons'] : [];
+        $out['icons'] = [];
+        foreach ($d['icons'] as $role => $default) {
+            $out['icons'][$role] = self::pick($posted_icons, $role, array_keys(self::icon_choices()), (string) ($current['icons'][$role] ?? $default));
+        }
 
         $jur = isset($in['jurisdictions']) ? (array) $in['jurisdictions'] : [];
         $out['jurisdictions'] = array_values(array_intersect(['eu', 'ca'], array_map('sanitize_key', $jur)));

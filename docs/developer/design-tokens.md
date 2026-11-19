@@ -4,6 +4,25 @@ Every color used by the plugin, in hex, RGB, and OKLCH. The values live as CSS c
 
 The look is "signage": ink text and borders on white, with one crumb-yellow accent. Yellow is the primary button and the settings icon. Ink fills the admin header and the secondary-action outline. Keep yellow for primary actions only.
 
+## Plugin styling variables
+
+The admin's choices print as CSS custom properties on `.crumbz` (see `Crumbz_Frontend::style_css()`). The defaults in `frontend.css` apply only when those are missing.
+
+| Variable | Set from | Used by |
+|---|---|---|
+| `--crumbz-primary` | Primary color | Accept button, settings icon, the dot in the banner title |
+| `--crumbz-primary-fg` | Chosen automatically: black or white, whichever has more contrast with the primary color | Text on the Accept button and the settings icon |
+| `--crumbz-secondary` | Secondary color | Reject and Save buttons (text and outline) |
+| `--crumbz-tertiary` | Tertiary color | Customize, links, and the hide-icon link |
+| `--crumbz-font-primary` | Primary typeface | Headings and buttons |
+| `--crumbz-font-secondary` | Secondary typeface | Body text |
+
+Typefaces are the four bundled families (`"Crumbz Sans"`, `"Crumbz Serif"`, `"Crumbz Display"`, `"Crumbz Mono"`, from `assets/fonts/`), or an uploaded font, which gets its own `@font-face` with the name `"Crumbz Custom <slug>"`.
+
+The `data-style` attribute on the root is `plugin` or `theme`. Color and typeface rules are scoped to `[data-style="plugin"]`, so in theme mode the theme's own classes are not overridden. In theme mode the buttons carry the admin's class names as well: `crumbz-btn-primary <class>`, and so on.
+
+Bundled fonts: Inter, Source Serif 4, Playfair Display, and JetBrains Mono, subset to Latin and converted to WOFF2, all under the SIL Open Font License. Icons: Lucide, under the ISC license. See `THIRD-PARTY.md`.
+
 ## Light theme (default)
 
 | Token | Hex | RGB | OKLCH |

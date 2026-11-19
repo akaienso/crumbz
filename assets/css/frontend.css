@@ -1,4 +1,13 @@
-/* Crumbz frontend styles. GPL-2.0-or-later. Colors are in docs/developer/design-tokens.md. */
+/* Crumbz frontend styles. GPL-2.0-or-later. Colors and typefaces are in docs/developer/design-tokens.md.
+   The bundled fonts are in assets/fonts and load from this site only. The plugin's inline style sets
+   the chosen colors and typefaces on .crumbz; these defaults apply when that style is missing. */
+
+/* ---------- bundled typefaces (OFL, see assets/fonts) ---------- */
+
+@font-face { font-family: "Crumbz Sans"; src: url("../fonts/crumbz-sans.woff2") format("woff2"); font-weight: 100 900; font-style: normal; font-display: swap; }
+@font-face { font-family: "Crumbz Serif"; src: url("../fonts/crumbz-serif.woff2") format("woff2"); font-weight: 200 900; font-style: normal; font-display: swap; }
+@font-face { font-family: "Crumbz Display"; src: url("../fonts/crumbz-display.woff2") format("woff2"); font-weight: 400 900; font-style: normal; font-display: swap; }
+@font-face { font-family: "Crumbz Mono"; src: url("../fonts/crumbz-mono.woff2") format("woff2"); font-weight: 100 800; font-style: normal; font-display: swap; }
 
 /* Light is the default. Dark applies when the visitor or admin picks it,
    or when the system is dark and the theme is Auto. */
@@ -6,9 +15,12 @@
     --crumbz-bg: #ffffff;
     --crumbz-fg: #15171c;
     --crumbz-muted: #545b68;
-    --crumbz-accent: #ffc53d;
-    --crumbz-accent-fg: #15171c;
-    --crumbz-accent-hover: #f2b11e;
+    --crumbz-primary: #ffc53d;
+    --crumbz-primary-fg: #15171c;
+    --crumbz-secondary: #15171c;
+    --crumbz-tertiary: #15171c;
+    --crumbz-font-primary: "Crumbz Sans", system-ui, sans-serif;
+    --crumbz-font-secondary: "Crumbz Sans", system-ui, sans-serif;
     --crumbz-border: #7d8694;
     --crumbz-surface: #f4f5f7;
     --crumbz-switch-off: #7d8694;
@@ -22,9 +34,6 @@
     --crumbz-bg: #ffffff;
     --crumbz-fg: #15171c;
     --crumbz-muted: #545b68;
-    --crumbz-accent: #ffc53d;
-    --crumbz-accent-fg: #15171c;
-    --crumbz-accent-hover: #f2b11e;
     --crumbz-border: #7d8694;
     --crumbz-surface: #f4f5f7;
     --crumbz-switch-off: #7d8694;
@@ -41,9 +50,6 @@
     --crumbz-bg: #14171c;
     --crumbz-fg: #eef1f5;
     --crumbz-muted: #a7b0bd;
-    --crumbz-accent: #ffc53d;
-    --crumbz-accent-fg: #15171c;
-    --crumbz-accent-hover: #ffd166;
     --crumbz-border: #737d8d;
     --crumbz-surface: #1e232b;
     --crumbz-switch-off: #737d8d;
@@ -58,9 +64,6 @@
         --crumbz-bg: #14171c;
         --crumbz-fg: #eef1f5;
         --crumbz-muted: #a7b0bd;
-        --crumbz-accent: #ffc53d;
-        --crumbz-accent-fg: #15171c;
-        --crumbz-accent-hover: #ffd166;
         --crumbz-border: #737d8d;
         --crumbz-surface: #1e232b;
         --crumbz-switch-off: #737d8d;
@@ -79,6 +82,16 @@
 .crumbz {
     font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     color: var(--crumbz-fg);
+}
+
+/* Plugin styling: the chosen colors and typefaces apply. */
+.crumbz[data-style="plugin"] {
+    font-family: var(--crumbz-font-secondary);
+}
+
+/* Theme classes: the theme's own CSS styles the buttons, so the plugin only sets layout here. */
+.crumbz[data-style="theme"] {
+    font-family: inherit;
 }
 
 .crumbz [hidden] {
@@ -124,8 +137,23 @@
     width: min(560px, calc(100vw - 32px));
 }
 
+/* Full-width bar, used when the admin turns the floating card off. */
+.crumbz-banner-bar.crumbz-banner-bottom {
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: auto;
+    border-width: 1px 0 0;
+    border-radius: 0;
+    padding: 18px 16px;
+}
+
 .crumbz-inner {
     margin: 0 auto;
+}
+
+.crumbz-banner-bar .crumbz-inner {
+    max-width: 1100px;
 }
 
 .crumbz-head {
@@ -143,14 +171,14 @@
     flex: 1 1 auto;
 }
 
-.crumbz-banner .crumbz-title::before {
+.crumbz[data-style="plugin"] .crumbz-banner .crumbz-title::before {
     content: "";
     display: inline-block;
     width: 12px;
     height: 12px;
     margin-right: 10px;
     border-radius: 50%;
-    background: var(--crumbz-accent);
+    background: var(--crumbz-primary);
     vertical-align: 1px;
 }
 
@@ -170,9 +198,12 @@
 }
 
 .crumbz a {
-    color: var(--crumbz-fg);
     text-decoration: underline;
     text-underline-offset: 3px;
+}
+
+.crumbz[data-style="plugin"] a {
+    color: var(--crumbz-tertiary);
 }
 
 .crumbz-actions {
@@ -200,7 +231,7 @@
     order: 2;
 }
 
-.crumbz-banner .crumbz-btn-ghost {
+.crumbz-banner .crumbz-btn-tertiary {
     order: 3;
     flex: 1 0 100%;
     min-height: 40px;
@@ -211,6 +242,7 @@
 
 /* ---------- buttons ---------- */
 
+/* Layout only. Colors and typefaces come from the plugin's style or from the theme's classes. */
 .crumbz-btn {
     font: inherit;
     font-weight: 700;
@@ -221,32 +253,14 @@
     border-radius: 10px;
     border: 2px solid transparent;
     cursor: pointer;
-    transition: background-color 0.15s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: background-color 0.15s ease, filter 0.15s ease;
 }
 
-.crumbz-btn-primary {
-    background: var(--crumbz-accent);
-    color: var(--crumbz-accent-fg);
-    border-color: var(--crumbz-fg);
-}
-
-.crumbz-btn-primary:hover {
-    background: var(--crumbz-accent-hover);
-}
-
-.crumbz-btn-secondary {
-    background: var(--crumbz-bg);
-    color: var(--crumbz-fg);
-    border-color: var(--crumbz-fg);
-}
-
-.crumbz-btn-secondary:hover {
-    background: var(--crumbz-surface);
-}
-
-.crumbz-btn-ghost {
-    background: transparent;
-    color: var(--crumbz-fg);
+.crumbz-btn-tertiary {
     font-weight: 600;
     text-decoration: underline;
     text-underline-offset: 3px;
@@ -258,7 +272,6 @@
     min-width: 0;
     min-height: 44px;
     padding: 0 4px;
-    color: var(--crumbz-fg);
     font-weight: 600;
     text-decoration: underline;
     text-underline-offset: 3px;
@@ -275,6 +288,18 @@
     color: var(--crumbz-fg);
     border-color: var(--crumbz-border);
     white-space: nowrap;
+}
+
+.crumbz-icon {
+    display: inline-flex;
+    flex: 0 0 auto;
+    width: 18px;
+    height: 18px;
+}
+
+.crumbz-icon svg {
+    width: 100%;
+    height: 100%;
 }
 
 .crumbz-x {
@@ -294,6 +319,39 @@
     background: var(--crumbz-surface);
 }
 
+/* Plugin styling: headings and buttons use the primary typeface. */
+.crumbz[data-style="plugin"] .crumbz-btn,
+.crumbz[data-style="plugin"] .crumbz-title,
+.crumbz[data-style="plugin"] .crumbz-group h3 {
+    font-family: var(--crumbz-font-primary);
+}
+
+.crumbz[data-style="plugin"] .crumbz-btn-primary {
+    background: var(--crumbz-primary);
+    color: var(--crumbz-primary-fg);
+    border-color: var(--crumbz-primary);
+}
+
+.crumbz[data-style="plugin"] .crumbz-btn-primary:hover {
+    filter: brightness(0.94);
+}
+
+.crumbz[data-style="plugin"] .crumbz-btn-secondary {
+    background: var(--crumbz-bg);
+    color: var(--crumbz-secondary);
+    border-color: var(--crumbz-secondary);
+}
+
+.crumbz[data-style="plugin"] .crumbz-btn-secondary:hover {
+    background: var(--crumbz-surface);
+}
+
+.crumbz[data-style="plugin"] .crumbz-btn-tertiary,
+.crumbz[data-style="plugin"] .crumbz-btn-link {
+    background: transparent;
+    color: var(--crumbz-tertiary);
+}
+
 /* ---------- settings icon ---------- */
 
 .crumbz-fab {
@@ -306,16 +364,27 @@
     border-radius: 50%;
     display: grid;
     place-items: center;
-    background: var(--crumbz-accent);
-    color: var(--crumbz-accent-fg);
+    background: var(--crumbz-bg);
+    color: var(--crumbz-fg);
     box-shadow: var(--crumbz-shadow);
     cursor: grab;
     touch-action: none;
     user-select: none;
 }
 
+.crumbz[data-style="plugin"] .crumbz-fab {
+    background: var(--crumbz-primary);
+    color: var(--crumbz-primary-fg);
+    border-color: var(--crumbz-primary);
+}
+
 .crumbz-fab:active {
     cursor: grabbing;
+}
+
+.crumbz-fab .crumbz-icon {
+    width: 24px;
+    height: 24px;
 }
 
 .crumbz-pos-bottom-left   { left: 16px;  bottom: 16px; }
@@ -505,7 +574,7 @@
 
 /* Small screens: stack the banner buttons, keep the dialog readable. */
 @media (max-width: 600px) {
-    .crumbz-banner-bottom {
+    .crumbz-banner-bottom:not(.crumbz-banner-bar) {
         left: 12px;
         right: 12px;
         bottom: 12px;

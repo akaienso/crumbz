@@ -16,7 +16,8 @@ Go to **Crumbz > Settings**.
 |---|---|
 | Crumbz is on | Shows the banner and icon, and blocks optional scripts. Off means Crumbz does nothing on the site. |
 | Automatic updates | Installs new Crumbz releases on WordPress's schedule. Turn it off to update by hand. |
-| Banner position | Bottom card (a floating card in the bottom-left corner), top bar, or a centered panel. |
+| Banner position | Bottom, top bar, or a centered panel. |
+| Banner shape | At the bottom: a floating card in the corner (default), or a full-width bar. |
 | Settings icon position | Bottom left, bottom center, bottom right, top left, top center, or top right. Visitors can drag it anywhere. |
 | Default theme | Auto (follows the visitor's system), light, or dark. |
 | Cookie lifetime | How many days a visitor's choice is remembered. Default 180. |
@@ -26,6 +27,25 @@ Go to **Crumbz > Settings**.
 | Third-party script rules | Domains whose scripts must wait for consent. One per line, as `domain | category`. |
 | Category snippets | Tracking code that Crumbz prints only after its category is allowed. Requires an administrator with unfiltered HTML access. |
 | Wording | The banner and dialog text. |
+
+## Look
+
+Under **Look**, choose how the banner, the dialog, and the settings icon are styled.
+
+**Plugin styling** (the default) uses the colors and typefaces you pick:
+
+- **Primary, secondary, and tertiary colors.** Primary is the Accept button and the settings icon. Secondary is Reject and Save. Tertiary is Customize and the links. Crumbz picks black or white text for the primary button, whichever reads better. A warning appears under a color that is too light to read on white.
+- **Primary and secondary typeface.** Primary is for headings and buttons. Secondary is for body text. The choices are Inter (sans serif), Source Serif 4 (serif), Playfair Display (display serif), and JetBrains Mono (monospace). All four are included with Crumbz and load from your own site, not from another server. They are open-source fonts under the SIL Open Font License.
+
+**My theme** uses class names your theme already defines. Enter a class for primary, secondary, and tertiary, and Crumbz adds it to the matching buttons. Your theme's CSS then sets the colors, fonts, and shapes. Crumbz keeps the banner's surface neutral in this mode.
+
+**Icons.** Pick an icon for Accept, Reject, Customize, and the settings icon, or choose no icon. The icons are from the Lucide set (ISC license) and take the color of their button.
+
+### Your typefaces
+
+To use your own typeface, upload a WOFF2 or WOFF file of 2 MB or less under **Your typefaces**, and give it a name. It then appears in the typeface lists. Upload only fonts you have the license to use on your site.
+
+Uploaded fonts are stored in your uploads folder. Deleting Crumbz from the Plugins screen removes them. The bundled fonts go with the plugin.
 
 ## Upgrading
 

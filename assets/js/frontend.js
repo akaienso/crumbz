@@ -65,8 +65,22 @@
         return n;
     }
 
-    function button(label, cls, onClick) {
-        var b = el('button', { type: 'button', class: 'crumbz-btn ' + cls, text: label });
+    /* Role classes: crumbz-btn-primary, -secondary, -tertiary. In theme mode, the admin's own class names are added too. */
+    function roleCls(role) {
+        var extra = cfg.style === 'theme' ? ((cfg.themeClasses || {})[role] || '') : '';
+        return 'crumbz-btn-' + role + (extra ? ' ' + extra : '');
+    }
+
+    function iconEl(key) {
+        var svg = (cfg.icons || {})[key];
+        if (!svg) { return null; }
+        var span = el('span', { class: 'crumbz-icon', 'aria-hidden': 'true' });
+        span.innerHTML = svg;
+        return span;
+    }
+
+    function button(label, cls, onClick, iconKey) {
+        var b = el('button', { type: 'button', class: 'crumbz-btn ' + cls }, [iconEl(iconKey), document.createTextNode(label)]);
         b.addEventListener('click', onClick);
         return b;
     }
@@ -263,13 +277,13 @@
         }
 
         kids.push(el('div', { class: 'crumbz-actions' }, [
-            button(t('reject', 'Reject all'), 'crumbz-btn-secondary', rejectAll),
-            button(t('customize', 'Customize'), 'crumbz-btn-ghost', openDialog),
-            button(t('accept', 'Accept all'), 'crumbz-btn-primary', acceptAll)
+            button(t('reject', 'Reject all'), roleCls('secondary'), rejectAll, 'reject'),
+            button(t('customize', 'Customize'), roleCls('tertiary'), openDialog, 'customize'),
+            button(t('accept', 'Accept all'), roleCls('primary'), acceptAll, 'accept')
         ]));
 
         banner = el('section', {
-            class: 'crumbz-banner crumbz-banner-' + (cfg.bannerPosition || 'bottom'),
+            class: 'crumbz-banner crumbz-banner-' + (cfg.bannerPosition || 'bottom') + (cfg.bannerShape === 'bar' ? ' crumbz-banner-bar' : ''),
             role: 'region',
             'aria-labelledby': 'crumbz-banner-title'
         }, [el('div', { class: 'crumbz-inner' }, kids)]);
@@ -350,9 +364,9 @@
             catsGroup,
             gpcNote,
             el('div', { class: 'crumbz-actions' }, [
-                button(t('reject', 'Reject all'), 'crumbz-btn-secondary', rejectAll),
-                button(t('save', 'Save choices'), 'crumbz-btn-secondary', saveFromDialog),
-                button(t('accept', 'Accept all'), 'crumbz-btn-primary', acceptAll)
+                button(t('reject', 'Reject all'), roleCls('secondary'), rejectAll, 'reject'),
+                button(t('save', 'Save choices'), roleCls('secondary'), saveFromDialog),
+                button(t('accept', 'Accept all'), roleCls('primary'), acceptAll, 'accept')
             ]),
             el('div', { class: 'crumbz-actions crumbz-actions-start' },
                 [button(t('hideIcon', 'Hide this icon'), 'crumbz-btn-link', hideIcon)].concat(extra))
@@ -473,12 +487,12 @@
         var pos = cfg.position || 'bottom-left';
         fab = el('button', {
             type: 'button',
-            class: 'crumbz-fab crumbz-pos-' + pos,
+            class: 'crumbz-fab crumbz-pos-' + pos + (cfg.style === 'theme' && (cfg.themeClasses || {}).primary ? ' ' + cfg.themeClasses.primary : ''),
             'aria-label': t('iconLabel', 'Cookie settings'),
             title: t('iconLabel', 'Cookie settings'),
             'aria-haspopup': 'dialog'
         });
-        fab.innerHTML = ICON_SVG;
+        fab.innerHTML = '<span class="crumbz-icon" aria-hidden="true">' + ((cfg.icons || {}).settings || ICON_SVG) + '</span>';
         fab.hidden = true;
 
         fab.addEventListener('click', function () {
@@ -546,7 +560,7 @@
     /* ---------- start ---------- */
 
     function init() {
-        root = el('div', { id: 'crumbz-root', class: 'crumbz', 'data-theme': currentTheme() });
+        root = el('div', { id: 'crumbz-root', class: 'crumbz', 'data-theme': currentTheme(), 'data-style': cfg.style === 'theme' ? 'theme' : 'plugin' });
         document.body.appendChild(root);
         buildBanner();
         buildDialog();
