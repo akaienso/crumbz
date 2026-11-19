@@ -18,7 +18,7 @@
     var POS_COOKIE = 'crumbz_icon';
     var THEME_COOKIE = 'crumbz_theme';
     var pageTheme = null; // the theme chosen on this page only, when Preferences is refused
-    var ICON_SVG = '<svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false">' +
+    var ICON_SVG = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false">' +
         '<path fill="currentColor" d="M12 2a10 10 0 1 0 10 10 3.5 3.5 0 0 1-4.2-4.2A3.5 3.5 0 0 1 14.5 4.9 4 4 0 0 1 12 2z"/>' +
         '<circle cx="8" cy="9" r="1.4" fill="currentColor"/>' +
         '<circle cx="12.5" cy="14.5" r="1.4" fill="currentColor"/>' +
@@ -71,11 +71,19 @@
         return 'crumbz-btn-' + role + (extra ? ' ' + extra : '');
     }
 
+    function svgNode(markup) {
+        var doc = new DOMParser().parseFromString(markup, 'image/svg+xml');
+        var root = doc.documentElement;
+        if (!root || root.nodeName.toLowerCase() !== 'svg' || doc.getElementsByTagName('parsererror').length) { return null; }
+        return document.importNode(root, true);
+    }
+
     function iconEl(key) {
         var svg = (cfg.icons || {})[key];
         if (!svg) { return null; }
         var span = el('span', { class: 'crumbz-icon', 'aria-hidden': 'true' });
-        span.innerHTML = svg;
+        var node = svgNode(svg);
+        if (node) { span.appendChild(node); }
         return span;
     }
 
@@ -492,7 +500,10 @@
             title: t('iconLabel', 'Cookie settings'),
             'aria-haspopup': 'dialog'
         });
-        fab.innerHTML = '<span class="crumbz-icon" aria-hidden="true">' + ((cfg.icons || {}).settings || ICON_SVG) + '</span>';
+        var fabIcon = el('span', { class: 'crumbz-icon', 'aria-hidden': 'true' });
+        var fabSvg = svgNode((cfg.icons || {}).settings || ICON_SVG);
+        if (fabSvg) { fabIcon.appendChild(fabSvg); }
+        fab.appendChild(fabIcon);
         fab.hidden = true;
 
         fab.addEventListener('click', function () {

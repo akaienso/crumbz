@@ -118,6 +118,9 @@
     border-radius: 16px;
     box-shadow: var(--crumbz-shadow);
     padding: 22px;
+    max-height: calc(100vh - 32px);
+    max-height: calc(100dvh - 32px);
+    overflow-y: auto;
 }
 
 .crumbz-banner-top {
@@ -528,6 +531,7 @@
 }
 
 .crumbz-cat .crumbz-check input:checked::before {
+    background: var(--crumbz-bg);
     transform: translateX(20px);
 }
 

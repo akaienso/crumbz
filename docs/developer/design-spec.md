@@ -52,7 +52,7 @@ Crumbz checks the active plugin list against a built-in map (WooCommerce, Jetpac
 - Drag to move it. A tap opens the settings dialog. A drag that moves less than 6 px counts as a tap. The position is kept in the `crumbz_icon` cookie once Preferences is accepted (see decisions table).
 - Keyboard: Tab to focus, Enter opens, arrow keys nudge it 8 px.
 - Hidden permanently when a visitor picks "Hide this icon" (stored in the consent record). Clearing cookies resets the flow.
-- Banner: bottom bar, top bar, or centered panel (admin choice).
+- Banner: floating card (default) or full-width bar; bottom, top, or centered panel position (admin choice).
 - Theme: Auto (follows `prefers-color-scheme`), Light, or Dark. A visitor toggle is in the dialog. Admin can set the default.
 
 ## Documents and wizard
@@ -82,4 +82,4 @@ Crumbz checks the active plugin list against a built-in map (WooCommerce, Jetpac
 - `includes/class-crumbz-wizard.php`: wizard steps and draft creation.
 - `includes/class-crumbz-templates.php`: draft text for the three policy pages.
 - `assets/js/frontend.js`, `assets/css/frontend.css`, `assets/css/admin.css`.
-- `docs/DESIGN-TOKENS.md`: every color in hex, RGB, and OKLCH.
+- `docs/developer/design-tokens.md`: every color in hex, RGB, and OKLCH.
