@@ -336,7 +336,9 @@ async function main() {
             const { ctx, page } = await freshPage(browser);
             await page.goto(BASE, { waitUntil: 'networkidle0' });
             const t0 = await page.evaluate(() => document.getElementById('crumbz-root').getAttribute('data-theme'));
-            await clickButton(page, '.crumbz-banner', 'Theme');
+            await page.click('.crumbz-banner .crumbz-btn-tertiary');
+            await new Promise(r => setTimeout(r, 300));
+            await clickButton(page, '.crumbz-dialog', 'Theme');
             const t1 = await page.evaluate(() => document.getElementById('crumbz-root').getAttribute('data-theme'));
             check('F1 theme toggle cycles auto -> light', t0 === 'auto' && t1 === 'light', `${t0} -> ${t1}`);
             await ctx.close();
