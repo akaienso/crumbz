@@ -25,6 +25,7 @@ require_once CRUMBZ_DIR . 'includes/class-crumbz-consent.php';
 require_once CRUMBZ_DIR . 'includes/class-crumbz-detect.php';
 require_once CRUMBZ_DIR . 'includes/class-crumbz-scripts.php';
 require_once CRUMBZ_DIR . 'includes/class-crumbz-frontend.php';
+require_once CRUMBZ_DIR . 'includes/class-crumbz-fonts.php';
 require_once CRUMBZ_DIR . 'includes/class-crumbz-templates.php';
 require_once CRUMBZ_DIR . 'includes/class-crumbz-advisor.php';
 require_once CRUMBZ_DIR . 'includes/class-crumbz-wizard.php';
@@ -35,6 +36,7 @@ register_activation_hook(__FILE__, ['Crumbz_Settings', 'activate']);
 
 add_action('plugins_loaded', static function () {
     Crumbz_Frontend::init();
+    Crumbz_Fonts::init();
     Crumbz_Scripts::init();
     Crumbz_Updater::init();
     Crumbz_Admin::init();

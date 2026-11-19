@@ -1,29 +1,42 @@
-/* Crumbz frontend styles. GPL-2.0-or-later. Colors are in docs/DESIGN-TOKENS.md. */
+/* Crumbz frontend styles. GPL-2.0-or-later. Colors and typefaces are in docs/developer/design-tokens.md.
+   The bundled fonts are in assets/fonts and load from this site only. The plugin's inline style sets
+   the chosen colors and typefaces on .crumbz; these defaults apply when that style is missing. */
+
+/* ---------- bundled typefaces (OFL, see assets/fonts) ---------- */
+
+@font-face { font-family: "Crumbz Sans"; src: url("../fonts/crumbz-sans.woff2") format("woff2"); font-weight: 100 900; font-style: normal; font-display: swap; }
+@font-face { font-family: "Crumbz Serif"; src: url("../fonts/crumbz-serif.woff2") format("woff2"); font-weight: 200 900; font-style: normal; font-display: swap; }
+@font-face { font-family: "Crumbz Display"; src: url("../fonts/crumbz-display.woff2") format("woff2"); font-weight: 400 900; font-style: normal; font-display: swap; }
+@font-face { font-family: "Crumbz Mono"; src: url("../fonts/crumbz-mono.woff2") format("woff2"); font-weight: 100 800; font-style: normal; font-display: swap; }
 
 /* Light is the default. Dark applies when the visitor or admin picks it,
    or when the system is dark and the theme is Auto. */
 .crumbz {
     --crumbz-bg: #ffffff;
-    --crumbz-fg: #1b1f24;
-    --crumbz-muted: #4f5a68;
-    --crumbz-accent: #2450b8;
-    --crumbz-accent-fg: #ffffff;
+    --crumbz-fg: #15171c;
+    --crumbz-muted: #545b68;
+    --crumbz-primary: #ffc53d;
+    --crumbz-primary-fg: #15171c;
+    --crumbz-secondary: #15171c;
+    --crumbz-tertiary: #15171c;
+    --crumbz-font-primary: "Crumbz Sans", system-ui, sans-serif;
+    --crumbz-font-secondary: "Crumbz Sans", system-ui, sans-serif;
     --crumbz-border: #7d8694;
-    --crumbz-surface: #f3f5f8;
+    --crumbz-surface: #f4f5f7;
+    --crumbz-switch-off: #7d8694;
     --crumbz-focus: #1a4fb0;
-    --crumbz-shadow: 0 8px 28px rgba(20, 24, 31, 0.18);
-    --crumbz-backdrop: rgba(20, 24, 31, 0.55);
+    --crumbz-shadow: 0 14px 40px rgba(21, 23, 28, 0.22);
+    --crumbz-backdrop: rgba(21, 23, 28, 0.55);
     color-scheme: light;
 }
 
 .crumbz[data-theme="light"] {
     --crumbz-bg: #ffffff;
-    --crumbz-fg: #1b1f24;
-    --crumbz-muted: #4f5a68;
-    --crumbz-accent: #2450b8;
-    --crumbz-accent-fg: #ffffff;
+    --crumbz-fg: #15171c;
+    --crumbz-muted: #545b68;
     --crumbz-border: #7d8694;
-    --crumbz-surface: #f3f5f8;
+    --crumbz-surface: #f4f5f7;
+    --crumbz-switch-off: #7d8694;
     --crumbz-focus: #1a4fb0;
     color-scheme: light;
 }
@@ -37,12 +50,11 @@
     --crumbz-bg: #14171c;
     --crumbz-fg: #eef1f5;
     --crumbz-muted: #a7b0bd;
-    --crumbz-accent: #9cbaff;
-    --crumbz-accent-fg: #0c1426;
     --crumbz-border: #737d8d;
     --crumbz-surface: #1e232b;
+    --crumbz-switch-off: #737d8d;
     --crumbz-focus: #ffd166;
-    --crumbz-shadow: 0 8px 28px rgba(0, 0, 0, 0.5);
+    --crumbz-shadow: 0 14px 40px rgba(0, 0, 0, 0.5);
     --crumbz-backdrop: rgba(0, 0, 0, 0.7);
     color-scheme: dark;
 }
@@ -52,12 +64,11 @@
         --crumbz-bg: #14171c;
         --crumbz-fg: #eef1f5;
         --crumbz-muted: #a7b0bd;
-        --crumbz-accent: #9cbaff;
-        --crumbz-accent-fg: #0c1426;
         --crumbz-border: #737d8d;
         --crumbz-surface: #1e232b;
+        --crumbz-switch-off: #737d8d;
         --crumbz-focus: #ffd166;
-        --crumbz-shadow: 0 8px 28px rgba(0, 0, 0, 0.5);
+        --crumbz-shadow: 0 14px 40px rgba(0, 0, 0, 0.5);
         --crumbz-backdrop: rgba(0, 0, 0, 0.7);
         color-scheme: dark;
     }
@@ -73,6 +84,16 @@
     color: var(--crumbz-fg);
 }
 
+/* Plugin styling: the chosen colors and typefaces apply. */
+.crumbz[data-style="plugin"] {
+    font-family: var(--crumbz-font-secondary);
+}
+
+/* Theme classes: the theme's own CSS styles the buttons, so the plugin only sets layout here. */
+.crumbz[data-style="theme"] {
+    font-family: inherit;
+}
+
 .crumbz [hidden] {
     display: none !important;
 }
@@ -84,24 +105,30 @@
 
 /* ---------- banner ---------- */
 
+/* The default is a floating card in the bottom-left corner. */
 .crumbz-banner {
     position: fixed;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    left: 16px;
+    bottom: 16px;
     z-index: 2147483000;
+    width: min(480px, calc(100vw - 32px));
     background: var(--crumbz-bg);
     color: var(--crumbz-fg);
-    border-top: 1px solid var(--crumbz-border);
+    border: 1.5px solid var(--crumbz-border);
+    border-radius: 16px;
     box-shadow: var(--crumbz-shadow);
-    padding: 16px;
+    padding: 22px;
+    max-height: calc(100vh - 32px);
+    max-height: calc(100dvh - 32px);
+    overflow-y: auto;
 }
 
 .crumbz-banner-top {
-    top: 0;
+    top: 16px;
     bottom: auto;
-    border-top: 0;
-    border-bottom: 1px solid var(--crumbz-border);
+    left: 16px;
+    right: 16px;
+    width: auto;
 }
 
 .crumbz-banner-modal {
@@ -111,13 +138,25 @@
     bottom: auto;
     transform: translate(-50%, -50%);
     width: min(560px, calc(100vw - 32px));
-    border: 1px solid var(--crumbz-border);
-    border-radius: 12px;
+}
+
+/* Full-width bar, used when the admin turns the floating card off. */
+.crumbz-banner-bar.crumbz-banner-bottom {
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: auto;
+    border-width: 1px 0 0;
+    border-radius: 0;
+    padding: 18px 16px;
 }
 
 .crumbz-inner {
-    max-width: 1100px;
     margin: 0 auto;
+}
+
+.crumbz-banner-bar .crumbz-inner {
+    max-width: 1100px;
 }
 
 .crumbz-head {
@@ -127,15 +166,29 @@
 }
 
 .crumbz-title {
-    font-size: 1.125rem;
-    line-height: 1.3;
+    font-size: 1.25rem;
+    font-weight: 700;
+    line-height: 1.25;
+    letter-spacing: -0.01em;
     margin: 0 0 8px;
     flex: 1 1 auto;
 }
 
+.crumbz[data-style="plugin"] .crumbz-banner .crumbz-title::before {
+    content: "";
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    margin-right: 10px;
+    border-radius: 50%;
+    background: var(--crumbz-primary);
+    vertical-align: 1px;
+}
+
 .crumbz-msg {
-    margin: 0 0 12px;
+    margin: 0 0 14px;
     color: var(--crumbz-muted);
+    font-size: 0.9375rem;
 }
 
 .crumbz-doclist {
@@ -148,14 +201,18 @@
 }
 
 .crumbz a {
-    color: var(--crumbz-accent);
+    text-decoration: underline;
     text-underline-offset: 3px;
+}
+
+.crumbz[data-style="plugin"] a {
+    color: var(--crumbz-tertiary);
 }
 
 .crumbz-actions {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
+    gap: 10px;
     justify-content: flex-end;
     margin-top: 12px;
 }
@@ -164,33 +221,50 @@
     justify-content: flex-start;
 }
 
+.crumbz-banner .crumbz-actions {
+    margin-top: 0;
+}
+
+.crumbz-banner .crumbz-btn {
+    flex: 1 1 0;
+    min-width: 0;
+}
+
+.crumbz-banner .crumbz-btn-primary {
+    order: 2;
+}
+
+.crumbz-banner .crumbz-btn-tertiary {
+    order: 3;
+    flex: 1 0 100%;
+    min-height: 40px;
+    text-align: left;
+    padding-left: 0;
+    padding-right: 0;
+}
+
 /* ---------- buttons ---------- */
 
+/* Layout only. Colors and typefaces come from the plugin's style or from the theme's classes. */
 .crumbz-btn {
     font: inherit;
-    min-height: 44px;
+    font-weight: 700;
+    font-size: 0.9375rem;
+    min-height: 48px;
     min-width: 10rem;
-    padding: 8px 16px;
-    border-radius: 8px;
+    padding: 10px 18px;
+    border-radius: 10px;
     border: 2px solid transparent;
     cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: background-color 0.15s ease, filter 0.15s ease;
 }
 
-.crumbz-btn-primary {
-    background: var(--crumbz-accent);
-    color: var(--crumbz-accent-fg);
+.crumbz-btn-tertiary {
     font-weight: 600;
-}
-
-.crumbz-btn-secondary {
-    background: var(--crumbz-bg);
-    color: var(--crumbz-fg);
-    border-color: var(--crumbz-fg);
-}
-
-.crumbz-btn-ghost {
-    background: transparent;
-    color: var(--crumbz-fg);
     text-decoration: underline;
     text-underline-offset: 3px;
 }
@@ -198,9 +272,10 @@
 .crumbz-btn-link {
     background: none;
     border: 0;
+    min-width: 0;
     min-height: 44px;
     padding: 0 4px;
-    color: var(--crumbz-accent);
+    font-weight: 600;
     text-decoration: underline;
     text-underline-offset: 3px;
     cursor: pointer;
@@ -209,12 +284,25 @@
 .crumbz-btn-theme {
     min-width: 0;
     min-height: 36px;
-    padding: 4px 10px;
+    padding: 4px 12px;
     font-size: 0.875rem;
+    border-radius: 999px;
     background: var(--crumbz-surface);
     color: var(--crumbz-fg);
     border-color: var(--crumbz-border);
     white-space: nowrap;
+}
+
+.crumbz-icon {
+    display: inline-flex;
+    flex: 0 0 auto;
+    width: 18px;
+    height: 18px;
+}
+
+.crumbz-icon svg {
+    width: 100%;
+    height: 100%;
 }
 
 .crumbz-x {
@@ -222,7 +310,7 @@
     width: 44px;
     height: 44px;
     border: 0;
-    border-radius: 8px;
+    border-radius: 10px;
     background: transparent;
     color: var(--crumbz-fg);
     font-size: 1.5rem;
@@ -230,28 +318,76 @@
     cursor: pointer;
 }
 
+.crumbz-x:hover {
+    background: var(--crumbz-surface);
+}
+
+/* Plugin styling: headings and buttons use the primary typeface. */
+.crumbz[data-style="plugin"] .crumbz-btn,
+.crumbz[data-style="plugin"] .crumbz-title,
+.crumbz[data-style="plugin"] .crumbz-group h3 {
+    font-family: var(--crumbz-font-primary);
+}
+
+.crumbz[data-style="plugin"] .crumbz-btn-primary {
+    background: var(--crumbz-primary);
+    color: var(--crumbz-primary-fg);
+    border-color: var(--crumbz-primary);
+}
+
+.crumbz[data-style="plugin"] .crumbz-btn-primary:hover {
+    filter: brightness(0.94);
+}
+
+.crumbz[data-style="plugin"] .crumbz-btn-secondary {
+    background: var(--crumbz-bg);
+    color: var(--crumbz-secondary);
+    border-color: var(--crumbz-secondary);
+}
+
+.crumbz[data-style="plugin"] .crumbz-btn-secondary:hover {
+    background: var(--crumbz-surface);
+}
+
+.crumbz[data-style="plugin"] .crumbz-btn-tertiary,
+.crumbz[data-style="plugin"] .crumbz-btn-link {
+    background: transparent;
+    color: var(--crumbz-tertiary);
+}
+
 /* ---------- settings icon ---------- */
 
 .crumbz-fab {
     position: fixed;
     z-index: 2147483000;
-    width: 48px;
-    height: 48px;
+    width: 52px;
+    height: 52px;
     padding: 0;
-    border: 0;
+    border: 2px solid var(--crumbz-fg);
     border-radius: 50%;
     display: grid;
     place-items: center;
-    background: var(--crumbz-accent);
-    color: var(--crumbz-accent-fg);
+    background: var(--crumbz-bg);
+    color: var(--crumbz-fg);
     box-shadow: var(--crumbz-shadow);
     cursor: grab;
     touch-action: none;
     user-select: none;
 }
 
+.crumbz[data-style="plugin"] .crumbz-fab {
+    background: var(--crumbz-primary);
+    color: var(--crumbz-primary-fg);
+    border-color: var(--crumbz-primary);
+}
+
 .crumbz-fab:active {
     cursor: grabbing;
+}
+
+.crumbz-fab .crumbz-icon {
+    width: 24px;
+    height: 24px;
 }
 
 .crumbz-pos-bottom-left   { left: 16px;  bottom: 16px; }
@@ -277,8 +413,8 @@
     max-height: calc(100vh - 32px);
     margin: auto;
     padding: 0;
-    border: 1px solid var(--crumbz-border);
-    border-radius: 12px;
+    border: 1.5px solid var(--crumbz-border);
+    border-radius: 16px;
     background: var(--crumbz-bg);
     color: var(--crumbz-fg);
     box-shadow: var(--crumbz-shadow);
@@ -289,28 +425,46 @@
 }
 
 .crumbz-dialog-inner {
-    padding: 24px;
+    padding: 28px;
     overflow: auto;
 }
 
+.crumbz-dialog .crumbz-title {
+    font-size: 1.625rem;
+    letter-spacing: -0.02em;
+    margin-bottom: 10px;
+}
+
+.crumbz-dialog .crumbz-actions:not(.crumbz-actions-start) {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    margin-top: 20px;
+}
+
+.crumbz-dialog .crumbz-actions:not(.crumbz-actions-start) .crumbz-btn {
+    min-width: 0;
+    width: 100%;
+}
+
 .crumbz-group {
-    margin: 16px 0;
+    margin: 20px 0 0;
     padding: 0;
     border: 0;
 }
 
 .crumbz-group h3 {
     font-size: 1rem;
-    margin: 0 0 8px;
+    font-weight: 700;
+    margin: 0 0 10px;
 }
 
 .crumbz-doc,
 .crumbz-cat {
-    padding: 10px 12px;
-    border: 1px solid var(--crumbz-border);
-    border-radius: 8px;
-    margin-bottom: 8px;
-    background: var(--crumbz-surface);
+    padding: 14px 16px;
+    border: 1.5px solid var(--crumbz-border);
+    border-radius: 12px;
+    margin-bottom: 10px;
+    background: var(--crumbz-bg);
 }
 
 .crumbz-doc {
@@ -333,7 +487,62 @@
     height: 20px;
     margin: 2px 0 0;
     flex: 0 0 auto;
-    accent-color: var(--crumbz-accent);
+    accent-color: var(--crumbz-fg);
+}
+
+/* Categories show a switch: a track with a sliding knob. Checkboxes keep
+   their real state, so keyboard and screen-reader behaviour is unchanged. */
+.crumbz-cat .crumbz-check {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    font-weight: 700;
+}
+
+.crumbz-cat .crumbz-check input {
+    order: 2;
+    margin: 0;
+    width: 48px;
+    height: 28px;
+    appearance: none;
+    -webkit-appearance: none;
+    position: relative;
+    border-radius: 999px;
+    background: var(--crumbz-switch-off);
+    transition: background-color 0.15s ease;
+}
+
+.crumbz-cat .crumbz-check input::before {
+    content: "";
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #ffffff;
+    transition: transform 0.15s ease;
+}
+
+.crumbz-cat .crumbz-check input:checked {
+    background: var(--crumbz-fg);
+}
+
+.crumbz-cat .crumbz-check input:checked::before {
+    background: var(--crumbz-bg);
+    transform: translateX(20px);
+}
+
+.crumbz-cat .crumbz-check input:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.crumbz-cat-name {
+    flex: 1 1 auto;
+    text-align: left;
 }
 
 .crumbz-check input:disabled {
@@ -341,7 +550,7 @@
 }
 
 .crumbz-cat-desc {
-    margin: 4px 0 0 30px;
+    margin: 4px 0 0;
     color: var(--crumbz-muted);
     font-size: 0.9375rem;
 }
@@ -349,7 +558,7 @@
 .crumbz-note {
     color: var(--crumbz-muted);
     font-size: 0.9375rem;
-    margin: 12px 0 0;
+    margin: 14px 0 0;
 }
 
 .crumbz-doclink {
@@ -367,10 +576,17 @@
     }
 }
 
-/* Small screens: stack buttons full width. */
+/* Small screens: stack the banner buttons, keep the dialog readable. */
 @media (max-width: 600px) {
-    .crumbz-actions .crumbz-btn {
-        flex: 1 1 100%;
+    .crumbz-banner-bottom:not(.crumbz-banner-bar) {
+        left: 12px;
+        right: 12px;
+        bottom: 12px;
+        width: auto;
+        padding: 18px;
+    }
+    .crumbz-dialog .crumbz-actions:not(.crumbz-actions-start) {
+        grid-template-columns: 1fr;
     }
     .crumbz-head {
         flex-wrap: wrap;

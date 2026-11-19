@@ -30,8 +30,54 @@ class Crumbz_Frontend {
             return;
         }
         wp_enqueue_style('crumbz', CRUMBZ_URL . 'assets/css/frontend.css', [], CRUMBZ_VERSION);
+        wp_add_inline_style('crumbz', self::style_css(Crumbz_Settings::all()));
         wp_enqueue_script('crumbz', CRUMBZ_URL . 'assets/js/frontend.js', [], CRUMBZ_VERSION, true);
         wp_add_inline_script('crumbz', 'window.crumbzConfig = ' . wp_json_encode(self::config()) . ';', 'before');
+    }
+
+    /**
+     * Colors and typefaces from the settings, as CSS custom properties, plus @font-face rules for
+     * uploaded fonts. Every value is validated (hex colors, known font ids, sanitized slugs).
+     */
+    public static function style_css(array $s): string {
+        $colors = (array) $s['colors'];
+        $css = '';
+        $fonts = Crumbz_Settings::custom_font_list($s);
+        foreach ($fonts as $slug => $font) {
+            $format = ($font['format'] ?? '') === 'woff2' ? 'woff2' : 'woff';
+            $css .= '@font-face{font-family:"Crumbz Custom ' . $slug . '";src:url("' . esc_url_raw(Crumbz_Fonts::url((string) $font['file'])) . '") format("' . $format . '");font-weight:100 900;font-style:normal;font-display:swap;}';
+        }
+
+        $primary = (string) $colors['primary'];
+        $css .= '.crumbz{'
+            . '--crumbz-primary:' . $primary . ';'
+            . '--crumbz-primary-fg:' . Crumbz_Settings::readable_on($primary) . ';'
+            . '--crumbz-secondary:' . $colors['secondary'] . ';'
+            . '--crumbz-tertiary:' . $colors['tertiary'] . ';'
+            . '--crumbz-font-primary:' . self::font_family((string) $s['fonts']['primary'], $fonts) . ';'
+            . '--crumbz-font-secondary:' . self::font_family((string) $s['fonts']['secondary'], $fonts) . ';'
+            . '}';
+        return $css;
+    }
+
+    private static function font_family(string $id, array $custom): string {
+        if (strpos($id, 'custom:') === 0) {
+            $slug = substr($id, 7);
+            if (isset($custom[$slug])) {
+                return '"Crumbz Custom ' . $slug . '", system-ui, sans-serif';
+            }
+        }
+        $bundled = Crumbz_Settings::bundled_fonts();
+        return $bundled[$id]['family'] ?? $bundled['sans']['family'];
+    }
+
+    /** The SVG for a chosen icon, read from the bundled Lucide set. Empty for "none" or unknown names. */
+    private static function icon_svg(string $name): string {
+        if (!array_key_exists($name, Crumbz_Settings::icon_choices()) || $name === 'none') {
+            return '';
+        }
+        $file = CRUMBZ_DIR . 'assets/icons/' . $name . '.svg';
+        return is_readable($file) ? trim((string) file_get_contents($file)) : '';
     }
 
     public static function config(): array {
@@ -70,6 +116,15 @@ class Crumbz_Frontend {
             'theme'          => (string) $s['theme'],
             'position'       => (string) $s['button_position'],
             'bannerPosition' => (string) $s['banner_position'],
+            'bannerShape'    => (string) $s['banner_shape'],
+            'style'          => (string) $s['style_mode'],
+            'themeClasses'   => (array) $s['theme_classes'],
+            'icons'          => [
+                'accept'    => self::icon_svg((string) $s['icons']['accept']),
+                'reject'    => self::icon_svg((string) $s['icons']['reject']),
+                'customize' => self::icon_svg((string) $s['icons']['customize']),
+                'settings'  => self::icon_svg((string) $s['icons']['settings']),
+            ],
             'jurisdictions'  => array_values((array) $s['jurisdictions']),
             'gpc'            => Crumbz_Consent::gpc(),
             'documents'      => $docs,

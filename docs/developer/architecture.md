@@ -20,7 +20,9 @@ Crumbz is a WordPress plugin with a PHP back end and a small vanilla JavaScript 
 | `assets/js/frontend.js` | Builds the banner, the settings dialog, and the draggable icon. Writes the consent record and the preference cookies. |
 | `assets/css/frontend.css` | Front-end styles, with the theme tokens. |
 | `assets/css/admin.css` | Admin styles. The admin uses no inline scripts or styles. |
-| `uninstall.php` | Deletes Crumbz options when the plugin is deleted. Draft pages are kept. |
+| `uninstall.php` | Deletes Crumbz options and uploaded fonts (`uploads/crumbz-fonts`) when the plugin is deleted. Draft pages are kept. |
+| `includes/class-crumbz-fonts.php` | Uploads and removes custom WOFF2/WOFF typefaces. Checks the file size and signature bytes. |
+| `assets/fonts/`, `assets/icons/` | Bundled OFL typefaces (WOFF2) and Lucide icons (SVG), with their licenses. |
 
 ## Request flow
 

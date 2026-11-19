@@ -18,7 +18,7 @@
     var POS_COOKIE = 'crumbz_icon';
     var THEME_COOKIE = 'crumbz_theme';
     var pageTheme = null; // the theme chosen on this page only, when Preferences is refused
-    var ICON_SVG = '<svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false">' +
+    var ICON_SVG = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false">' +
         '<path fill="currentColor" d="M12 2a10 10 0 1 0 10 10 3.5 3.5 0 0 1-4.2-4.2A3.5 3.5 0 0 1 14.5 4.9 4 4 0 0 1 12 2z"/>' +
         '<circle cx="8" cy="9" r="1.4" fill="currentColor"/>' +
         '<circle cx="12.5" cy="14.5" r="1.4" fill="currentColor"/>' +
@@ -65,8 +65,30 @@
         return n;
     }
 
-    function button(label, cls, onClick) {
-        var b = el('button', { type: 'button', class: 'crumbz-btn ' + cls, text: label });
+    /* Role classes: crumbz-btn-primary, -secondary, -tertiary. In theme mode, the admin's own class names are added too. */
+    function roleCls(role) {
+        var extra = cfg.style === 'theme' ? ((cfg.themeClasses || {})[role] || '') : '';
+        return 'crumbz-btn-' + role + (extra ? ' ' + extra : '');
+    }
+
+    function svgNode(markup) {
+        var doc = new DOMParser().parseFromString(markup, 'image/svg+xml');
+        var root = doc.documentElement;
+        if (!root || root.nodeName.toLowerCase() !== 'svg' || doc.getElementsByTagName('parsererror').length) { return null; }
+        return document.importNode(root, true);
+    }
+
+    function iconEl(key) {
+        var svg = (cfg.icons || {})[key];
+        if (!svg) { return null; }
+        var span = el('span', { class: 'crumbz-icon', 'aria-hidden': 'true' });
+        var node = svgNode(svg);
+        if (node) { span.appendChild(node); }
+        return span;
+    }
+
+    function button(label, cls, onClick, iconKey) {
+        var b = el('button', { type: 'button', class: 'crumbz-btn ' + cls }, [iconEl(iconKey), document.createTextNode(label)]);
         b.addEventListener('click', onClick);
         return b;
     }
@@ -263,13 +285,13 @@
         }
 
         kids.push(el('div', { class: 'crumbz-actions' }, [
-            button(t('reject', 'Reject all'), 'crumbz-btn-secondary', rejectAll),
-            button(t('customize', 'Customize'), 'crumbz-btn-ghost', openDialog),
-            button(t('accept', 'Accept all'), 'crumbz-btn-primary', acceptAll)
+            button(t('reject', 'Reject all'), roleCls('secondary'), rejectAll, 'reject'),
+            button(t('customize', 'Customize'), roleCls('tertiary'), openDialog, 'customize'),
+            button(t('accept', 'Accept all'), roleCls('primary'), acceptAll, 'accept')
         ]));
 
         banner = el('section', {
-            class: 'crumbz-banner crumbz-banner-' + (cfg.bannerPosition || 'bottom'),
+            class: 'crumbz-banner crumbz-banner-' + (cfg.bannerPosition || 'bottom') + (cfg.bannerShape === 'bar' ? ' crumbz-banner-bar' : ''),
             role: 'region',
             'aria-labelledby': 'crumbz-banner-title'
         }, [el('div', { class: 'crumbz-inner' }, kids)]);
@@ -350,9 +372,9 @@
             catsGroup,
             gpcNote,
             el('div', { class: 'crumbz-actions' }, [
-                button(t('reject', 'Reject all'), 'crumbz-btn-secondary', rejectAll),
-                button(t('save', 'Save choices'), 'crumbz-btn-secondary', saveFromDialog),
-                button(t('accept', 'Accept all'), 'crumbz-btn-primary', acceptAll)
+                button(t('reject', 'Reject all'), roleCls('secondary'), rejectAll, 'reject'),
+                button(t('save', 'Save choices'), roleCls('secondary'), saveFromDialog),
+                button(t('accept', 'Accept all'), roleCls('primary'), acceptAll, 'accept')
             ]),
             el('div', { class: 'crumbz-actions crumbz-actions-start' },
                 [button(t('hideIcon', 'Hide this icon'), 'crumbz-btn-link', hideIcon)].concat(extra))
@@ -473,12 +495,15 @@
         var pos = cfg.position || 'bottom-left';
         fab = el('button', {
             type: 'button',
-            class: 'crumbz-fab crumbz-pos-' + pos,
+            class: 'crumbz-fab crumbz-pos-' + pos + (cfg.style === 'theme' && (cfg.themeClasses || {}).primary ? ' ' + cfg.themeClasses.primary : ''),
             'aria-label': t('iconLabel', 'Cookie settings'),
             title: t('iconLabel', 'Cookie settings'),
             'aria-haspopup': 'dialog'
         });
-        fab.innerHTML = ICON_SVG;
+        var fabIcon = el('span', { class: 'crumbz-icon', 'aria-hidden': 'true' });
+        var fabSvg = svgNode((cfg.icons || {}).settings || ICON_SVG);
+        if (fabSvg) { fabIcon.appendChild(fabSvg); }
+        fab.appendChild(fabIcon);
         fab.hidden = true;
 
         fab.addEventListener('click', function () {
@@ -546,7 +571,7 @@
     /* ---------- start ---------- */
 
     function init() {
-        root = el('div', { id: 'crumbz-root', class: 'crumbz', 'data-theme': currentTheme() });
+        root = el('div', { id: 'crumbz-root', class: 'crumbz', 'data-theme': currentTheme(), 'data-style': cfg.style === 'theme' ? 'theme' : 'plugin' });
         document.body.appendChild(root);
         buildBanner();
         buildDialog();
